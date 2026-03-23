@@ -317,6 +317,11 @@ input,textarea,button{font-family:'Inter',system-ui,sans-serif}
         <div id="notes-list"></div>
         <div class="score-bar" id="score-bar">✦ 0 / 0 correct</div>
 
+        <div class="info-box" id="sermon-points-box">
+          <div class="info-title">THIS WEEK'S POINTS OF EMPHASIS</div>
+          <div id="sermon-points-list"></div>
+        </div>
+
         <div class="reflection-card" id="reflection-card">
           <p class="feat-title">REFLECTION</p>
           <div id="reflection-list"></div>
@@ -432,6 +437,8 @@ var dragStart = null;
 var dragEnd = null;
 var currentRef = '';
 var currentText = '';
+var weeklySermon = null;
+var sermonFeedUrl = 'https://script.google.com/macros/s/AKfycbxBKe6aH0vIWYk38QSEVXCuqMLchI4JI8oEGoQ_RP_mK8koa0f9_qQKI4KBfuVhZMxD/exec';
 var audienceMode = 'adult';
 var reflectionAnswers = {};
 var memoryLevel = 1;
@@ -463,6 +470,7 @@ var DIFF_CONFIG = {
   applyNoteMode(noteMode);
   setAudienceMode(audienceMode);
   document.getElementById('hist-btn').style.display = 'block';
+  setTimeout(function(){ loadWeeklySermonFromSheet(false); }, 100);
 })();
 
 function saveSettings() {
@@ -508,6 +516,8 @@ function setAudienceMode(mode) {
     btn.classList.toggle('on', btn.dataset.audience === mode);
   });
   saveSettings();
+  renderReflectionQuestions();
+  renderSermonPoints();
   if (currentText) {
     notesData = generateNotes(currentRef, currentText);
     userAnswers = {};
@@ -521,6 +531,15 @@ function getAudienceQuestionCount() {
   return 8;
 }
 function getReflectionQuestions() {
+  if (
+    weeklySermon &&
+    weeklySermon.reflectionQuestions &&
+    weeklySermon.reflectionQuestions[audienceMode] &&
+    weeklySermon.reflectionQuestions[audienceMode].length
+  ) {
+    return weeklySermon.reflectionQuestions[audienceMode];
+  }
+
   if (audienceMode === 'kids') {
     return [
       'What does this verse teach about God?',
@@ -538,6 +557,90 @@ function getReflectionQuestions() {
     'What truth from this passage should shape your week?',
     'What response or obedience is God calling you to?'
   ];
+}
+
+function renderWeeklyServiceSummary() {
+  var wrap = document.getElementById('weekly-service-summary');
+  if (!wrap) return;
+  if (!weeklySermon) {
+    wrap.innerHTML = '<div class="step-row"><div class="step-num">1</div><div class="step-txt">Enter your Apps Script web app URL in <strong>sermonFeedUrl</strong> to auto-load this week\'s service.</div></div>';
+    return;
+  }
+
+  var rows = [];
+  if (weeklySermon.title) {
+    rows.push('<div class="step-row"><div class="step-num">1</div><div class="step-txt"><strong>' + esc(weeklySermon.title) + '</strong>' + (weeklySermon.speaker ? ' · ' + esc(weeklySermon.speaker) : '') + '</div></div>');
+  }
+  if (weeklySermon.passage) {
+    rows.push('<div class="step-row"><div class="step-num">2</div><div class="step-txt">Passage: <strong>' + esc(weeklySermon.passage) + '</strong>' + (weeklySermon.memoryVerse ? ' · Memory Verse: ' + esc(weeklySermon.memoryVerse) : '') + '</div></div>');
+  }
+  if (weeklySermon.pointsOfEmphasis && weeklySermon.pointsOfEmphasis.length) {
+    rows.push('<div class="step-row"><div class="step-num">3</div><div class="step-txt">' + esc(weeklySermon.pointsOfEmphasis[0]) + '</div></div>');
+  }
+  wrap.innerHTML = rows.join('');
+}
+
+function renderSermonPoints() {
+  var box = document.getElementById('sermon-points-list');
+  if (!box) return;
+  var points = (weeklySermon && weeklySermon.pointsOfEmphasis) ? weeklySermon.pointsOfEmphasis : [];
+  if (!points.length) {
+    box.innerHTML = '<div class="step-row"><div class="step-num">1</div><div class="step-txt">Pastor points from the Google Sheet will appear here.</div></div>';
+    return;
+  }
+  box.innerHTML = '';
+  points.forEach(function(point, i) {
+    var row = document.createElement('div');
+    row.className = 'step-row';
+    row.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div class="step-txt">' + esc(point) + '</div>';
+    box.appendChild(row);
+  });
+}
+
+function applyWeeklySermonToUI() {
+  renderWeeklyServiceSummary();
+  renderSermonPoints();
+  if (weeklySermon && weeklySermon.passage) {
+    var verseEl = document.getElementById('verse-ref');
+    if (verseEl && !verseEl.value.trim()) verseEl.value = weeklySermon.passage;
+  }
+  if (weeklySermon && weeklySermon.title) {
+    document.getElementById('p-theme').textContent = weeklySermon.title + (weeklySermon.speaker ? ' · ' + weeklySermon.speaker : '');
+  }
+  renderReflectionQuestions();
+}
+
+async function loadWeeklySermonFromSheet(showAlert) {
+  if (!sermonFeedUrl || sermonFeedUrl.indexOf('PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') !== -1) {
+    renderWeeklyServiceSummary();
+    if (showAlert) alert('Add your Google Apps Script web app URL to sermonFeedUrl first.');
+    return;
+  }
+
+  var btns = Array.prototype.slice.call(document.querySelectorAll('[onclick="loadWeeklySermonFromSheet(true)"]'));
+  btns.forEach(function(btn){ btn.disabled = true; btn.textContent = 'LOADING...'; });
+
+  try {
+    var res = await fetch(sermonFeedUrl, { cache: 'no-store' });
+    var data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    weeklySermon = data;
+    applyWeeklySermonToUI();
+
+    if (weeklySermon.passage) {
+      var verseEl = document.getElementById('verse-ref');
+      if (verseEl) verseEl.value = weeklySermon.passage;
+    }
+
+    if (showAlert) alert('This week\'s service loaded successfully.');
+  } catch (err) {
+    console.error(err);
+    if (showAlert) alert('Unable to load this week\'s service. Check your Apps Script URL and sharing settings.');
+  } finally {
+    btns.forEach(function(btn){ btn.disabled = false; btn.textContent = 'REFRESH THIS WEEK\'S SERVICE'; });
+  }
 }
 
 // ── Progress UI ────────────────────────────────────────────────────
@@ -707,7 +810,7 @@ function buildStudy(ref, text) {
           currentText = text;
           reflectionAnswers = {};
           document.getElementById('p-ref').textContent = ref;
-          document.getElementById('p-theme').textContent = notes.theme;
+          document.getElementById('p-theme').textContent = weeklySermon && weeklySermon.title ? weeklySermon.title + (weeklySermon.speaker ? ' · ' + weeklySermon.speaker : '') : notes.theme;
           document.getElementById('p-esv').textContent = text;
           renderNotes(); renderWS(); resetMemoryMode();
           saveToHistory();
