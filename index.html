@@ -328,7 +328,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 var difficulty = 'medium';
 var noteMode = 'fillin';
 var darkMode = true;
-var history = [];
+var studyHistory = [];
 var notesData = null;
 var userAnswers = {};
 var revealedSet = new Set();
@@ -360,7 +360,7 @@ var DIFF_CONFIG = {
     darkMode = s.darkMode !== false;
     difficulty = s.difficulty || 'medium';
     noteMode = s.noteMode || 'fillin';
-    history = JSON.parse(localStorage.getItem('esv_history') || '[]');
+    studyHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
   } catch(e) {}
   applyDark();
   applyDiff(difficulty);
@@ -792,9 +792,9 @@ function revealAll(){wsPlaced.forEach(function(p){wsFound.add(p.word);p.cells.fo
 function resetWS(){wsFound=new Set();document.querySelectorAll('.wc').forEach(function(el){el.classList.remove('found','sel');});document.querySelectorAll('.word-item').forEach(function(el){el.className='word-item';});document.getElementById('celebrate-banner').classList.remove('show');document.getElementById('ws-timer-box').className='ws-stat';wsFinished=false;updateWSStatus();startTimer();}
 
 // ── History ────────────────────────────────────────────────────────
-function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};history=[entry].concat(history.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(history));}catch(e){}}
-function clearHistory(){if(!confirm('Clear all study history?'))return;history=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
-function loadFromHistory(id){var entry=history.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');notesData=entry.notes;userAnswers={};revealedSet=new Set();currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();showStudy();startTimer();}
+function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};studyHistory=[entry].concat(studyHistory.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(studyHistory));}catch(e){}}
+function clearHistory(){if(!confirm('Clear all study history?'))return;studyHistory=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
+function loadFromHistory(id){var entry=studyHistory.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');notesData=entry.notes;userAnswers={};revealedSet=new Set();currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();showStudy();startTimer();}
 
 // ── Share ──────────────────────────────────────────────────────────
 function shareStudy(){if(!notesData)return;var text=currentRef+' - Bible Study\n\nGUIDED NOTES\n';notesData.sentences.forEach(function(s,i){text+=(i+1)+'. '+s.text+'\n   Answer: '+s.answer+'\n\n';});text+='WORD SEARCH WORDS\n';wsPlaced.forEach(function(p){text+=p.word+'  ';});if(navigator.share){navigator.share({title:currentRef+' Bible Study',text:text}).catch(function(){});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Study copied to clipboard!');}}
@@ -806,7 +806,7 @@ function togglePassage(){var box=document.getElementById('passage-box');var btn=
 function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function showInput(){setScreen('scr-input');document.getElementById('new-btn').style.display='none';document.getElementById('hist-btn').style.display='block';var b=document.getElementById('gen-btn');b.disabled=false;b.innerHTML='✦ FETCH ESV &amp; GENERATE';progHide();hideErr();document.getElementById('paste-section').classList.remove('show');}
 function showStudy(){setScreen('scr-study');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';switchTab('notes');}
-function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!history.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}history.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
+function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!studyHistory.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}studyHistory.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
 function showSettings(){var prevStudy=document.getElementById('scr-study').classList.contains('active');setScreen('scr-settings');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';document.getElementById('new-btn').onclick=prevStudy?showStudy:showInput;}
 function switchTab(t){document.querySelectorAll('.tab-btn').forEach(function(b,i){b.classList.toggle('on',(i===0)===(t==='notes'));});document.getElementById('tc-notes').classList.toggle('on',t==='notes');document.getElementById('tc-wordsearch').classList.toggle('on',t==='wordsearch');if(t==='wordsearch'&&!wsFinished&&!wsRunning)startTimer();}
 </script>
