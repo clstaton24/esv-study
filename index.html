@@ -458,19 +458,23 @@ var DIFF_CONFIG = {
     darkMode = s.darkMode !== false;
     difficulty = s.difficulty || 'medium';
     noteMode = s.noteMode || 'fillin';
-    audienceMode = s.audienceMode || 'adult';
 
     var rawHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
     studyHistory = Array.isArray(rawHistory) ? rawHistory : [];
-  } catch(e) {
+
+  } catch (e) {
     studyHistory = [];
   }
+
   applyDark();
   applyDiff(difficulty);
   applyNoteMode(noteMode);
-  setAudienceMode(audienceMode);
+
   document.getElementById('hist-btn').style.display = 'block';
-  setTimeout(function(){ loadWeeklySermonFromSheet(false); }, 100);
+
+  // 🔥 ADD THIS LINE
+  loadWeeklySermonFromSheet();
+
 })();
 
 function saveSettings() {
