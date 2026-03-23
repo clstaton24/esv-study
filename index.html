@@ -360,8 +360,12 @@ var DIFF_CONFIG = {
     darkMode = s.darkMode !== false;
     difficulty = s.difficulty || 'medium';
     noteMode = s.noteMode || 'fillin';
-    studyHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
-  } catch(e) {}
+
+    var rawHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
+    studyHistory = Array.isArray(rawHistory) ? rawHistory : [];
+  } catch(e) {
+    studyHistory = [];
+  }
   applyDark();
   applyDiff(difficulty);
   applyNoteMode(noteMode);
@@ -526,7 +530,7 @@ async function fetchAndGenerate() {
     buildStudy(result.reference, result.text);
   } catch(e) {
     if (e.message.startsWith('NETWORK_BLOCKED')) {
-      progSet(0, 'fail', '2717 All ' + attempts.length + ' fetch methods failed');
+      progSet(0, 'fail', 'All fetch methods failed');
       progHide();
       // Show paste fallback
       document.getElementById('paste-section').classList.add('show');
@@ -792,7 +796,7 @@ function revealAll(){wsPlaced.forEach(function(p){wsFound.add(p.word);p.cells.fo
 function resetWS(){wsFound=new Set();document.querySelectorAll('.wc').forEach(function(el){el.classList.remove('found','sel');});document.querySelectorAll('.word-item').forEach(function(el){el.className='word-item';});document.getElementById('celebrate-banner').classList.remove('show');document.getElementById('ws-timer-box').className='ws-stat';wsFinished=false;updateWSStatus();startTimer();}
 
 // ── History ────────────────────────────────────────────────────────
-function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};studyHistory=[entry].concat(studyHistory.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(studyHistory));}catch(e){}}
+function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};if(!Array.isArray(studyHistory))studyHistory=[];studyHistory=[entry].concat(studyHistory.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(studyHistory));}catch(e){}}
 function clearHistory(){if(!confirm('Clear all study history?'))return;studyHistory=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
 function loadFromHistory(id){var entry=studyHistory.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');notesData=entry.notes;userAnswers={};revealedSet=new Set();currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();showStudy();startTimer();}
 
