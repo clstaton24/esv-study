@@ -3,49 +3,66 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>ESV Verse Study</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<title>Angus Church Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg:#080f08;--card:rgba(20,32,20,0.95);--input:#0e1a0e;--text:#f0e8d0;
-  --muted:#9a8868;--faint:#5a6a4a;--gold:#c9a020;--border:rgba(201,160,32,0.2);
-  --rule:rgba(201,160,32,0.35);--ph:#4a5a4a;--ok:#3a7a1a;--err:#a04030;
-  --wscell:#0e1a0e;--wsborder:#1a2a1a;--box:#142014;--hist:#142014;
+  --bg:#1f2230;--card:rgba(42,46,64,0.98);--input:#25293a;--text:#f4f6fb;
+  --muted:#b9bfd3;--faint:#8f98b6;--gold:#5d7fbe;--border:rgba(93,127,190,0.28);
+  --rule:rgba(93,127,190,0.45);--ph:#7882a2;--ok:#3fae6d;--err:#c85757;
+  --wscell:#25293a;--wsborder:#32384e;--box:#262a3b;--hist:#262a3b;
 }
 .light {
-  --bg:#f5f0e8;--card:rgba(255,250,240,0.98);--input:#fff;--text:#1a1a0a;
-  --muted:#6a5a3a;--faint:#8a7a5a;--gold:#a07810;--border:rgba(160,120,16,0.25);
-  --rule:rgba(160,120,16,0.4);--ph:#9a8a6a;--ok:#2a6a0a;--err:#a04030;
-  --wscell:#e8e0d0;--wsborder:#d0c8b8;--box:#ede8dc;--hist:#ede8dc;
+  --bg:#f4f7fc;--card:rgba(255,255,255,0.98);--input:#ffffff;--text:#1f2433;
+  --muted:#5a647e;--faint:#7d88a2;--gold:#4f72b3;--border:rgba(79,114,179,0.24);
+  --rule:rgba(79,114,179,0.38);--ph:#8a94ad;--ok:#2f9b61;--err:#c85757;
+  --wscell:#eef2f8;--wsborder:#d9e0ec;--box:#f0f4fa;--hist:#f0f4fa;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg)}
-body{min-height:100vh;font-family:'Crimson Text',Georgia,serif;color:var(--text);display:flex;flex-direction:column;align-items:center;transition:background .3s,color .3s}
-input,textarea,button{font-family:'Crimson Text',Georgia,serif}
+body{min-height:100vh;font-family:'Inter',system-ui,sans-serif;color:var(--text);display:flex;flex-direction:column;align-items:center;transition:background .3s,color .3s}
+input,textarea,button{font-family:'Inter',system-ui,sans-serif}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
 #app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh}
 .hdr{padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between}
-.hdr-left h1{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:2px;font-weight:700}
+.hdr-left h1{font-family:'Montserrat',system-ui,sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;font-weight:700}
 .hdr-left p{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:1px}
+
+.brand-mark{display:flex;align-items:center;gap:10px}
+.brand-logo{width:38px;height:38px;flex:0 0 38px}
+.brand-logo svg{display:block;width:100%;height:100%}
+.cross-logo{display:flex;justify-content:center;margin-bottom:12px}
+.cross-logo svg{width:84px;height:84px;display:block}
+.cross-sub{font-size:12px;color:var(--muted);letter-spacing:.8px;margin-top:6px}
+.cross-hdr h2{font-size:22px;letter-spacing:2px}
+.passage-ref{font-size:18px}
+.tab-btn{font-size:10px}
+.notes-panel{background:var(--box);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:14px}
+.reflection-card{background:var(--box);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:14px;margin-bottom:12px}
+.reflection-item{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.reflection-item:last-child{margin-bottom:0}
+.notes-actions{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+@media (max-width:520px){.hdr-left h1{font-size:16px;letter-spacing:1.4px}.brand-logo{width:34px;height:34px;flex-basis:34px}}
+
 .hdr-btns{display:flex;gap:6px;align-items:center}
 .rule{padding:7px 16px}.rule div{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.sm-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--gold);padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Cinzel',serif;letter-spacing:1px;transition:all .15s}
+.sm-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--gold);padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Montserrat',system-ui,sans-serif;letter-spacing:1px;transition:all .15s}
 .sm-btn:hover{border-color:var(--gold)}
-.gold-btn{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;transition:all .18s;box-shadow:0 4px 16px rgba(201,160,32,.2)}
-.gold-btn:disabled{background:#2a3a1a;color:#8a9870;cursor:not-allowed;box-shadow:none}
+.gold-btn{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,#4f72b3,var(--gold));color:#ffffff;transition:all .18s;box-shadow:0 6px 18px rgba(93,127,190,.24)}
+.gold-btn:disabled{background:#5c647b;color:#d7dbe6;cursor:not-allowed;box-shadow:none}
 .gold-btn:not(:disabled):active{transform:scale(.98)}
-.outline-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--gold);cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;width:100%;text-align:center;margin-top:8px}
-.danger-btn{background:#3a1010;border:1px solid #a04030;border-radius:10px;padding:12px;color:#f08070;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;width:100%}
+.outline-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--gold);cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:11px;letter-spacing:1px;width:100%;text-align:center;margin-top:8px}
+.danger-btn{background:#3a1010;border:1px solid #a04030;border-radius:10px;padding:12px;color:#f08070;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:12px;letter-spacing:1px;width:100%}
 .screen{display:none;flex:1;flex-direction:column}.screen.active{display:flex}
-.lbl{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;margin-top:4px}
+.lbl{display:block;font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;margin-top:4px}
 .fi{width:100%;padding:12px 14px;background:var(--input);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;outline:none;transition:border .2s}
 .fi:focus{border-color:var(--gold)}
 .fi::placeholder{color:var(--ph)}
 .fhint{font-size:11px;color:var(--faint);font-style:italic;margin-top:4px;margin-bottom:10px}
 .err-box{background:#2a1010;border:1px solid #a04030;border-radius:8px;padding:11px 14px;margin-bottom:12px;color:#e08070;font-size:13px;display:none;line-height:1.6}
-.err-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:#f08070;margin-bottom:4px}
+.err-title{font-family:'Montserrat',system-ui,sans-serif;font-size:10px;letter-spacing:1px;color:#f08070;margin-bottom:4px}
 .info-box{background:var(--box);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
-.info-title{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+.info-title{font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
 .step-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
 .step-num{background:var(--gold);color:#0a1808;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
 .step-txt{font-size:13px;color:var(--muted);line-height:1.5}
@@ -71,53 +88,53 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 
 /* TABS */
 .tabs{display:flex;margin:0 16px 10px;background:var(--box);border-radius:10px;padding:4px;gap:4px}
-.tab-btn{flex:1;padding:9px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;transition:all .18s;background:transparent;color:var(--muted)}
+.tab-btn{flex:1;padding:9px;border:none;border-radius:8px;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:11px;letter-spacing:1px;transition:all .18s;background:transparent;color:var(--muted)}
 .tab-btn.on{background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;font-weight:700}
 .tc{display:none;overflow-y:auto;flex:1}.tc.on{display:block}
 
 /* MODE PICKER */
 .mode-picker{display:flex;background:var(--box);border-radius:10px;padding:4px;gap:4px;margin-bottom:12px;border:1px solid var(--border)}
-.mode-btn{flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;background:transparent;color:var(--muted);transition:all .18s}
+.mode-btn{flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:10px;letter-spacing:1px;background:transparent;color:var(--muted);transition:all .18s}
 .mode-btn.on{background:var(--gold);color:#0a1808;font-weight:700}
 
 /* NOTES */
 .notes-body{padding:0 16px 40px}
 .note-card{margin-bottom:14px;padding:13px;background:var(--card);border-radius:12px;border:1px solid var(--border);animation:fadeUp .3s ease forwards}
 .note-card.ok{border-color:var(--ok)}
-.note-num{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;display:block;margin-bottom:4px}
+.note-num{color:var(--gold);font-family:'Montserrat',system-ui,sans-serif;font-size:11px;display:block;margin-bottom:4px}
 .note-txt{font-size:15px;line-height:1.8;color:var(--text);margin-bottom:8px}
-.blank{background:transparent;border:none;border-bottom:2px solid var(--gold);color:var(--text);font-size:15px;text-align:center;outline:none;padding:0 4px;min-width:70px;font-family:'Crimson Text',Georgia,serif}
+.blank{background:transparent;border:none;border-bottom:2px solid var(--gold);color:var(--text);font-size:15px;text-align:center;outline:none;padding:0 4px;min-width:70px;font-family:'Inter',system-ui,sans-serif}
 .blank.ok{border-bottom-color:#5ab02a;color:#5ab02a}
 .blank.rev{border-bottom-color:#4a9a1a;color:#5ab02a;font-style:italic}
 .note-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .note-hint{font-size:12px;color:#6a8a4a;font-style:italic;flex:1}
-.rev-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--gold);padding:3px 8px;cursor:pointer;font-size:10px;font-family:'Cinzel',serif;letter-spacing:1px;white-space:nowrap}
+.rev-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--gold);padding:3px 8px;cursor:pointer;font-size:10px;font-family:'Montserrat',system-ui,sans-serif;letter-spacing:1px;white-space:nowrap}
 .mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
-.mc-btn{border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;background:transparent;color:var(--muted);font-size:13px;text-align:center;transition:all .15s;font-family:'Crimson Text',Georgia,serif}
+.mc-btn{border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;background:transparent;color:var(--muted);font-size:13px;text-align:center;transition:all .15s;font-family:'Inter',system-ui,sans-serif}
 .mc-btn.chosen{border-color:var(--gold);background:var(--box);color:var(--text);font-weight:700}
 .mc-btn.correct{background:#1e4a10;border-color:#4a9a2a;color:#80d050;font-weight:700}
 .mc-btn.wrong{background:#3a1010;border-color:#9a3020;color:#f08070}
 .score-bar{padding:10px 14px;background:var(--box);border-radius:10px;text-align:center;border:1px solid var(--border);font-size:13px;color:var(--gold);margin-bottom:6px;font-weight:700}
 
-/* WORD SEARCH */
+/* KIDS ACTIVITY */
 .ws-body{padding:0 14px 40px}
 .ws-top-row{display:flex;gap:8px;margin-bottom:8px}
 .ws-stat{flex:1;background:var(--box);border-radius:10px;padding:9px;text-align:center;border:1px solid var(--border)}
-.ws-stat-val{color:var(--gold);font-family:'Cinzel',serif;font-size:14px;font-weight:700}
+.ws-stat-val{color:var(--gold);font-family:'Montserrat',system-ui,sans-serif;font-size:14px;font-weight:700}
 .ws-stat-lbl{color:var(--faint);font-size:10px;letter-spacing:1px;margin-top:1px}
 .ws-stat.win{background:#1e4a10;border-color:#4a9a2a}
 .ws-stat.win .ws-stat-val{color:#80d050}
 .ws-instruct{text-align:center;color:var(--faint);font-size:11px;font-style:italic;margin-bottom:10px}
 .ws-grid-wrap{display:flex;justify-content:center;margin-bottom:12px;touch-action:none;user-select:none;-webkit-user-select:none}
 .ws-grid{display:inline-grid;gap:1px;background:rgba(201,160,32,0.2);border:2px solid rgba(201,160,32,0.35);border-radius:8px;overflow:hidden}
-.wc{display:flex;align-items:center;justify-content:center;background:var(--wscell);font-family:'Cinzel',serif;font-weight:700;color:var(--text);-webkit-tap-highlight-color:transparent;transition:background .08s}
+.wc{display:flex;align-items:center;justify-content:center;background:var(--wscell);font-family:'Montserrat',system-ui,sans-serif;font-weight:700;color:var(--text);-webkit-tap-highlight-color:transparent;transition:background .08s}
 .wc.sel{background:var(--gold);color:#0a1808}
 .wc.found{background:#1e4a10;color:#80d050}
 .ws-btns{display:flex;gap:7px;margin-bottom:14px}
-.ws-btn{flex:1;padding:9px;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;border:1px solid var(--border);background:transparent;color:var(--gold)}
+.ws-btn{flex:1;padding:9px;border-radius:8px;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:10px;letter-spacing:1px;border:1px solid var(--border);background:transparent;color:var(--gold)}
 .ws-btn.gold{border:none;background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;font-weight:700}
 .word-list{display:flex;flex-wrap:wrap;gap:6px}
-.word-item{background:var(--box);border-radius:8px;padding:5px 10px;border:1px solid var(--border);font-family:'Cinzel',serif;font-size:11px;color:var(--muted);letter-spacing:1px;transition:all .2s}
+.word-item{background:var(--box);border-radius:8px;padding:5px 10px;border:1px solid var(--border);font-family:'Montserrat',system-ui,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;transition:all .2s}
 .word-item.done{background:#1e3a10;border-color:#4a8a2a;color:#70c040;text-decoration:line-through;text-decoration-color:#4a8a2a}
 @keyframes pop{0%{transform:scale(.8);opacity:0}50%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
 .celebrate{background:#1e4a10;border:1px solid #4a9a2a;border-radius:10px;padding:12px;text-align:center;margin-bottom:10px;color:#80d050;font-weight:700;font-size:14px;display:none;animation:pop .4s ease forwards}
@@ -125,7 +142,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 
 /* PASSAGE */
 .passage-hdr{padding:6px 16px 8px;text-align:center}
-.passage-ref{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);font-weight:600}
+.passage-ref{font-family:'Montserrat',system-ui,sans-serif;font-size:16px;color:var(--gold);font-weight:600}
 .passage-theme{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
 .passage-actions{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 .passage-box{margin:0 16px 8px;padding:10px 12px;background:var(--box);border-radius:8px;border:1px solid var(--border);max-height:120px;overflow-y:auto;display:none}
@@ -136,25 +153,25 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 .inp-body{padding:0 16px 40px;flex:1;overflow-y:auto}
 .cross-hdr{text-align:center;padding:10px 0 14px}
 .cross-hdr .icon{font-size:34px;color:var(--gold)}
-.cross-hdr h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:3px;margin:6px 0 4px}
+.cross-hdr h2{font-family:'Montserrat',system-ui,sans-serif;font-size:17px;color:var(--gold);letter-spacing:3px;margin:6px 0 4px}
 .cross-hdr p{color:var(--muted);font-size:13px;font-style:italic;line-height:1.5}
 .diff-row{display:flex;gap:6px;margin-bottom:14px}
-.diff-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
+.diff-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
 .diff-pill.on{background:var(--gold);border-color:var(--gold);color:#0a1808;font-weight:700}
 .feat-box{padding:13px;background:var(--box);border-radius:10px;border:1px solid var(--border);margin-top:8px}
-.feat-title{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+.feat-title{font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
 .feat-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:7px}
 .feat-icon{font-size:15px;min-width:22px}
 .feat-txt{font-size:13px;color:var(--muted);line-height:1.5}
 .hist-body{padding:0 16px 40px;overflow-y:auto;flex:1}
 .hist-card{background:var(--hist);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer;transition:border .2s}
 .hist-card:hover{border-color:var(--gold)}
-.hist-ref{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);font-weight:600;margin-bottom:2px}
+.hist-ref{font-family:'Montserrat',system-ui,sans-serif;font-size:15px;color:var(--gold);font-weight:600;margin-bottom:2px}
 .hist-date{font-size:11px;color:var(--faint);margin-bottom:4px}
 .hist-theme{font-size:13px;color:var(--muted);font-style:italic}
 .hist-empty{text-align:center;color:var(--faint);margin-top:40px;font-size:15px;font-style:italic}
 .sett-body{padding:0 16px 40px;overflow-y:auto;flex:1}
-.sett-section{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-top:20px;margin-bottom:10px}
+.sett-section{font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-top:20px;margin-bottom:10px}
 .sett-row{display:flex;align-items:center;justify-content:space-between;background:var(--box);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:8px}
 .sett-label{font-size:15px;color:var(--text)}
 .toggle{width:46px;height:26px;background:#3a4a3a;border-radius:13px;position:relative;cursor:pointer;transition:background .2s;border:none;outline:none;flex-shrink:0}
@@ -164,7 +181,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 .diff-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
 .diff-card{background:var(--box);border-radius:10px;padding:12px 14px;border:1px solid var(--border);cursor:pointer;transition:all .18s;display:flex;justify-content:space-between;align-items:center}
 .diff-card.on{border-color:var(--gold);background:rgba(201,160,32,0.08)}
-.diff-label{font-family:'Cinzel',serif;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:1px}
+.diff-label{font-family:'Montserrat',system-ui,sans-serif;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:1px}
 .diff-card.on .diff-label{color:var(--gold)}
 .diff-desc{font-size:12px;color:var(--faint)}
 .diff-check{color:var(--gold);font-size:16px;display:none}.diff-card.on .diff-check{display:block}
@@ -179,7 +196,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 .memory-controls .outline-btn,.memory-controls .gold-btn{margin-top:0;flex:1 1 120px}
 .memory-sub{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:10px;text-align:center}
 .audience-row{display:flex;gap:6px;margin-bottom:12px}
-.audience-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
+.audience-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Montserrat',system-ui,sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
 .audience-pill.on{background:var(--gold);border-color:var(--gold);color:#0a1808;font-weight:700}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -190,8 +207,8 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 <div id="app">
   <div class="hdr">
     <div class="hdr-left">
-      <h1>✦ ESV VERSE STUDY</h1>
-      <p>ENGLISH STANDARD VERSION</p>
+      <div class="brand-mark"><span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#ffffff" stroke-width="14" stroke-dasharray="185 80" transform="rotate(-40 50 50)"/><path d="M50 28 72 67h-13l-9-15-9 15H28l22-39Z" fill="#5d7fbe"/></svg></span><div><h1>ANGUS CHURCH STUDY</h1>
+      <p>SERMON NOTES • SCRIPTURE MEMORY</p></div></div>
     </div>
     <div class="hdr-btns">
       <button class="sm-btn" id="new-btn" style="display:none" onclick="showInput()">← NEW</button>
@@ -205,9 +222,10 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
   <div class="screen active" id="scr-input">
     <div class="inp-body">
       <div class="cross-hdr">
-        <div class="icon">✝</div>
-        <h2>ESV VERSE STUDY</h2>
-        <p>Type any verse reference and tap Fetch — the app will automatically load the ESV text for you</p>
+        <div class="cross-logo"><span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#ffffff" stroke-width="14" stroke-dasharray="185 80" transform="rotate(-40 50 50)"/><path d="M50 28 72 67h-13l-9-15-9 15H28l22-39Z" fill="#5d7fbe"/></svg></span></div>
+        <h2>ANGUS CHURCH</h2>
+        <p>SUNDAY VERSE STUDY</p>
+        <div class="cross-sub">Scripture • Sermon Notes • Family Discipleship</div>
       </div>
 
       <div class="diff-row">
@@ -222,9 +240,9 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
         <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
       </div>
 
-      <label class="lbl">VERSE REFERENCE</label>
+      <label class="lbl">THIS WEEK'S PASSAGE</label>
       <input class="fi" id="verse-ref" type="text" placeholder="e.g. John 3:16  or  Matthew 5:1-12" autocorrect="off" spellcheck="false" style="margin-bottom:4px" onkeydown="if(event.key==='Enter')fetchAndGenerate()"/>
-      <p class="fhint">Single verses, ranges, and chapters all work</p>
+      <p class="fhint">Single verses, ranges, and chapters all work for sermon or small-group studies</p>
 
       <!-- Progress -->
       <div class="progress-box" id="progress-box">
@@ -257,14 +275,14 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
         <button class="gold-btn" id="gen-btn-paste" onclick="generateFromPaste()" style="margin-bottom:0">✦ GENERATE FROM PASTED TEXT</button>
       </div>
 
-      <button class="gold-btn" id="gen-btn" onclick="fetchAndGenerate()" style="margin-bottom:14px">✦ FETCH ESV &amp; GENERATE</button>
+      <button class="gold-btn" id="gen-btn" onclick="fetchAndGenerate()" style="margin-bottom:14px">✦ BUILD THIS WEEK'S STUDY</button>
 
       <div class="feat-box">
-        <p class="feat-title">WHAT YOU GET</p>
-        <div class="feat-row"><span class="feat-icon">📖</span><p class="feat-txt">ESV text auto-fetched from the internet</p></div>
-        <div class="feat-row"><span class="feat-icon">✎</span><p class="feat-txt">Fill-in-blank or multiple choice guided notes</p></div>
-        <div class="feat-row"><span class="feat-icon">⊞</span><p class="feat-txt">Word search — drag your finger to find words</p></div>
-        <div class="feat-row"><span class="feat-icon">📚</span><p class="feat-txt">History, timer, difficulty levels, dark/light mode</p></div>
+        <p class="feat-title">HOW YOUR CHURCH CAN USE THIS</p>
+        <div class="feat-row"><span class="feat-icon">📖</span><p class="feat-txt">Load the week's Scripture for service, small groups, or family discipleship</p></div>
+        <div class="feat-row"><span class="feat-icon">✎</span><p class="feat-txt">Create sermon notes for kids, youth, or adults</p></div>
+        <div class="feat-row"><span class="feat-icon">⊞</span><p class="feat-txt">Use the kids activity for service engagement or at-home review</p></div>
+        <div class="feat-row"><span class="feat-icon">📚</span><p class="feat-txt">Save notes, email them, and practice the memory verse all week</p></div>
       </div>
     </div>
   </div>
@@ -275,15 +293,15 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
       <p class="passage-ref" id="p-ref"></p>
       <p class="passage-theme" id="p-theme"></p>
       <div class="passage-actions">
-        <button class="sm-btn" onclick="togglePassage()" id="passage-toggle-btn">Show Passage</button>
+        <button class="sm-btn" onclick="togglePassage()" id="passage-toggle-btn">Show Scripture</button>
         <button class="sm-btn" onclick="shareStudy()">Share 📤</button>
       </div>
     </div>
     <div class="passage-box" id="passage-box"><p class="passage-txt" id="p-esv"></p></div>
     <div class="tabs">
-      <button class="tab-btn on" data-tab="notes" onclick="switchTab('notes')">✎ GUIDED NOTES</button>
-      <button class="tab-btn" data-tab="wordsearch" onclick="switchTab('wordsearch')">⊞ WORD SEARCH</button>
-      <button class="tab-btn" data-tab="memory" onclick="switchTab('memory')">✦ MEMORY VERSE</button>
+      <button class="tab-btn on" data-tab="notes" onclick="switchTab('notes')">✎ SERMON NOTES</button>
+      <button class="tab-btn" data-tab="wordsearch" onclick="switchTab('wordsearch')">⊞ KIDS ACTIVITY</button>
+      <button class="tab-btn" data-tab="memory" onclick="switchTab('memory')">✦ SCRIPTURE MEMORY</button>
     </div>
     <div class="tc on" id="tc-notes">
       <div class="notes-body">
@@ -293,8 +311,8 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
           <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
         </div>
         <div class="mode-picker">
-          <button class="mode-btn on" id="mode-fillin" onclick="setNoteMode('fillin')">FILL IN BLANK</button>
-          <button class="mode-btn" id="mode-mc" onclick="setNoteMode('mc')">MULTIPLE CHOICE</button>
+          <button class="mode-btn on" id="mode-fillin" onclick="setNoteMode('fillin')">FILL IN NOTES</button>
+          <button class="mode-btn" id="mode-mc" onclick="setNoteMode('mc')">QUICK CHECK</button>
         </div>
         <div id="notes-list"></div>
         <div class="score-bar" id="score-bar">✦ 0 / 0 correct</div>
@@ -305,18 +323,18 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
         </div>
 
         <div class="notes-panel">
-          <label class="lbl">MY SERMON NOTES</label>
-          <textarea class="fi" id="personal-notes" rows="5" placeholder="Write what stood out to you..."></textarea>
+          <label class="lbl">MY SERVICE NOTES</label>
+          <textarea class="fi" id="personal-notes" rows="5" placeholder="Write what stood out from today's message..."></textarea>
 
           <label class="lbl">MY PRAYER</label>
           <textarea class="fi" id="personal-prayer" rows="3" placeholder="Write a prayer from today's message..."></textarea>
 
-          <label class="lbl">MY ACTION STEP</label>
-          <input class="fi" id="action-step" type="text" placeholder="What will you do this week?"/>
+          <label class="lbl">THIS WEEK'S RESPONSE</label>
+          <input class="fi" id="action-step" type="text" placeholder="How will you respond this week?"/>
 
           <div class="notes-actions">
-            <button class="outline-btn" onclick="savePersonalNotes()">SAVE MY NOTES</button>
-            <button class="gold-btn" onclick="emailMyNotes()">EMAIL MY NOTES TO ME</button>
+            <button class="outline-btn" onclick="savePersonalNotes()">SAVE NOTES</button>
+            <button class="gold-btn" onclick="emailMyNotes()">SEND MY NOTES</button>
           </div>
         </div>
       </div>
@@ -363,12 +381,12 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
   <div class="screen" id="scr-settings">
     <div class="sett-body">
       <p class="sett-section">APPEARANCE</p>
-      <div class="sett-row"><span class="sett-label">Dark Mode</span><button class="toggle on" id="dark-toggle" onclick="toggleDark()"></button></div>
+      <div class="sett-row"><span class="sett-label">Dark Theme</span><button class="toggle on" id="dark-toggle" onclick="toggleDark()"></button></div>
 
-      <p class="sett-section">NOTE MODE</p>
+      <p class="sett-section">SERMON NOTE MODE</p>
       <div class="mode-picker">
-        <button class="mode-btn on" id="sett-mode-fillin" onclick="settSetMode('fillin')">FILL IN BLANK</button>
-        <button class="mode-btn" id="sett-mode-mc" onclick="settSetMode('mc')">MULTIPLE CHOICE</button>
+        <button class="mode-btn on" id="sett-mode-fillin" onclick="settSetMode('fillin')">FILL IN NOTES</button>
+        <button class="mode-btn" id="sett-mode-mc" onclick="settSetMode('mc')">QUICK CHECK</button>
       </div>
 
       <p class="sett-section">AUDIENCE</p>
@@ -378,7 +396,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
         <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
       </div>
 
-      <p class="sett-section">WORD SEARCH DIFFICULTY</p>
+      <p class="sett-section">KIDS ACTIVITY DIFFICULTY</p>
       <div class="diff-cards">
         <div class="diff-card on" data-diff="easy" onclick="settSetDiff('easy')"><div><div class="diff-label">EASY</div><div class="diff-desc">Smaller grid, 4 directions</div></div><span class="diff-check">✓</span></div>
         <div class="diff-card" data-diff="medium" onclick="settSetDiff('medium')"><div><div class="diff-label">MEDIUM</div><div class="diff-desc">Standard grid, 8 directions</div></div><span class="diff-check">✓</span></div>
@@ -386,7 +404,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
       </div>
 
       <p class="sett-section">DATA</p>
-      <button class="danger-btn" onclick="clearHistory()">🗑 CLEAR ALL HISTORY</button>
+      <button class="danger-btn" onclick="clearHistory()">🗑 CLEAR SAVED STUDIES</button>
     </div>
   </div>
 </div>
@@ -652,7 +670,7 @@ async function fetchAndGenerate() {
       showErr('FETCH FAILED', e.message);
     }
     btn.disabled = false;
-    btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+    btn.innerHTML = '✦ BUILD THIS WEEK'S STUDY';
   }
 }
 
@@ -662,7 +680,7 @@ function generateFromPaste() {
   if (!text || text.length < 30) { showErr('MISSING TEXT', 'Please paste the ESV text in the box above first.'); return; }
   hideErr();
   progShow(); progReset();
-  buildStudy(ref || 'Bible Study', text);
+  buildStudy(ref || 'Angus Church Study', text);
 }
 
 function buildStudy(ref, text) {
@@ -696,14 +714,14 @@ function buildStudy(ref, text) {
           progSet(2, 'fail', '✗ ' + e.message);
           showErr('ERROR', e.message);
           var btn = document.getElementById('gen-btn');
-          btn.disabled = false; btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+          btn.disabled = false; btn.innerHTML = '✦ BUILD THIS WEEK'S STUDY';
         }
       }, 100);
     } catch(e) {
       progSet(1, 'fail', '✗ ' + e.message);
       showErr('ERROR', e.message);
       var btn = document.getElementById('gen-btn');
-      btn.disabled = false; btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+      btn.disabled = false; btn.innerHTML = '✦ BUILD THIS WEEK'S STUDY';
     }
   }, 100);
 }
@@ -779,7 +797,7 @@ function generateNotes(ref, text) {
     : audienceMode === 'youth'
       ? 'Guided notes for youth with practical application'
       : 'Deeper guided notes for adult study and reflection';
-  return { title: ref || 'Bible Study', theme: theme, sentences: notes.slice(0, targetCount) };
+  return { title: ref || 'Angus Church Study', theme: theme, sentences: notes.slice(0, targetCount) };
 }
 
 function buildWrongAnswers(word, text) {
@@ -952,9 +970,9 @@ function emailMyNotes() {
   getReflectionQuestions().forEach(function(q, i) {
     reflectionText += (i + 1) + '. ' + q + '\n' + (reflectionAnswers[i] || '') + '\n\n';
   });
-  var subject = encodeURIComponent('My Bible Study Notes - ' + currentRef);
+  var subject = encodeURIComponent('My Angus Church Study Notes - ' + currentRef);
   var body = encodeURIComponent(
-    'Bible Study: ' + currentRef + '\n' +
+    'Angus Church Study: ' + currentRef + '\n' +
     'Audience: ' + audienceMode.toUpperCase() + '\n\n' +
     'My Guided Notes:\n' + answerText + '\n' +
     'Reflection:\n' + reflectionText +
@@ -1044,16 +1062,16 @@ function clearHistory(){if(!confirm('Clear all study history?'))return;studyHist
 function loadFromHistory(id){var entry=studyHistory.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');audienceMode=entry.audienceMode||'adult';document.querySelectorAll('.audience-pill').forEach(function(btn){btn.classList.toggle('on',btn.dataset.audience===audienceMode);});saveSettings();notesData=entry.notes;userAnswers={};revealedSet=new Set();reflectionAnswers={};currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();resetMemoryMode();showStudy();startTimer();loadPersonalNotes();}
 
 // ── Share ──────────────────────────────────────────────────────────
-function shareStudy(){if(!notesData)return;var text=currentRef+' - Bible Study\n\nGUIDED NOTES\n';notesData.sentences.forEach(function(s,i){text+=(i+1)+'. '+s.text+'\n   Answer: '+s.answer+'\n\n';});text+='WORD SEARCH WORDS\n';wsPlaced.forEach(function(p){text+=p.word+'  ';});if(navigator.share){navigator.share({title:currentRef+' Bible Study',text:text}).catch(function(){});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Study copied to clipboard!');}}
+function shareStudy(){if(!notesData)return;var text='Angus Church - '+currentRef+'\n\nSERMON NOTES\n';notesData.sentences.forEach(function(s,i){text+=(i+1)+'. '+s.text+'\n   Answer: '+s.answer+'\n\n';});text+='KIDS ACTIVITY WORDS\n';wsPlaced.forEach(function(p){text+=p.word+'  ';});if(navigator.share){navigator.share({title:'Angus Church - '+currentRef,text:text}).catch(function(){});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Study copied to your clipboard!');}}
 
 // ── Passage toggle ─────────────────────────────────────────────────
-function togglePassage(){var box=document.getElementById('passage-box');var btn=document.getElementById('passage-toggle-btn');box.classList.toggle('show');btn.textContent=box.classList.contains('show')?'Hide Passage':'Show Passage';}
+function togglePassage(){var box=document.getElementById('passage-box');var btn=document.getElementById('passage-toggle-btn');box.classList.toggle('show');btn.textContent=box.classList.contains('show')?'Hide Scripture':'Show Scripture';}
 
 // ── Nav ────────────────────────────────────────────────────────────
 function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
-function showInput(){setScreen('scr-input');document.getElementById('new-btn').style.display='none';document.getElementById('hist-btn').style.display='block';var b=document.getElementById('gen-btn');b.disabled=false;b.innerHTML='✦ FETCH ESV &amp; GENERATE';progHide();hideErr();document.getElementById('paste-section').classList.remove('show');}
+function showInput(){setScreen('scr-input');document.getElementById('new-btn').style.display='none';document.getElementById('hist-btn').style.display='block';var b=document.getElementById('gen-btn');b.disabled=false;b.innerHTML='✦ BUILD THIS WEEK'S STUDY';progHide();hideErr();document.getElementById('paste-section').classList.remove('show');}
 function showStudy(){setScreen('scr-study');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';switchTab('notes');}
-function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!studyHistory.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}studyHistory.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
+function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">RECENT STUDIES</p>';if(!studyHistory.length){body.innerHTML+='<p class="hist-empty">No studies yet. Build your first Angus Church study.</p>';return;}studyHistory.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
 function showSettings(){var prevStudy=document.getElementById('scr-study').classList.contains('active');setScreen('scr-settings');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';document.getElementById('new-btn').onclick=prevStudy?showStudy:showInput;}
 function switchTab(t){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});document.getElementById('tc-notes').classList.toggle('on',t==='notes');document.getElementById('tc-wordsearch').classList.toggle('on',t==='wordsearch');document.getElementById('tc-memory').classList.toggle('on',t==='memory');if(t==='wordsearch'&&!wsFinished&&!wsRunning)startTimer();if(t==='memory')renderMemoryVerse();}
 </script>
