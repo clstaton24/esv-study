@@ -1,155 +1,1061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Angus Church Study</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>ESV Verse Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #1f2230;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
+:root {
+  --bg:#080f08;--card:rgba(20,32,20,0.95);--input:#0e1a0e;--text:#f0e8d0;
+  --muted:#9a8868;--faint:#5a6a4a;--gold:#c9a020;--border:rgba(201,160,32,0.2);
+  --rule:rgba(201,160,32,0.35);--ph:#4a5a4a;--ok:#3a7a1a;--err:#a04030;
+  --wscell:#0e1a0e;--wsborder:#1a2a1a;--box:#142014;--hist:#142014;
 }
-.container {
-  max-width: 600px;
-  margin: auto;
+.light {
+  --bg:#f5f0e8;--card:rgba(255,250,240,0.98);--input:#fff;--text:#1a1a0a;
+  --muted:#6a5a3a;--faint:#8a7a5a;--gold:#a07810;--border:rgba(160,120,16,0.25);
+  --rule:rgba(160,120,16,0.4);--ph:#9a8a6a;--ok:#2a6a0a;--err:#a04030;
+  --wscell:#e8e0d0;--wsborder:#d0c8b8;--box:#ede8dc;--hist:#ede8dc;
 }
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 6px;
-  border: none;
-}
-button {
-  padding: 12px;
-  margin: 10px 0;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  background: #5d7fbe;
-  color: white;
-  font-weight: bold;
-}
-.card {
-  background: #2a2e40;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 15px;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg)}
+body{min-height:100vh;font-family:'Crimson Text',Georgia,serif;color:var(--text);display:flex;flex-direction:column;align-items:center;transition:background .3s,color .3s}
+input,textarea,button{font-family:'Crimson Text',Georgia,serif}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+#app{width:100%;max-width:480px;display:flex;flex-direction:column;min-height:100vh}
+.hdr{padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between}
+.hdr-left h1{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:2px;font-weight:700}
+.hdr-left p{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:1px}
+.hdr-btns{display:flex;gap:6px;align-items:center}
+.rule{padding:7px 16px}.rule div{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.sm-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--gold);padding:5px 10px;cursor:pointer;font-size:11px;font-family:'Cinzel',serif;letter-spacing:1px;transition:all .15s}
+.sm-btn:hover{border-color:var(--gold)}
+.gold-btn{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;transition:all .18s;box-shadow:0 4px 16px rgba(201,160,32,.2)}
+.gold-btn:disabled{background:#2a3a1a;color:#8a9870;cursor:not-allowed;box-shadow:none}
+.gold-btn:not(:disabled):active{transform:scale(.98)}
+.outline-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--gold);cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;width:100%;text-align:center;margin-top:8px}
+.danger-btn{background:#3a1010;border:1px solid #a04030;border-radius:10px;padding:12px;color:#f08070;cursor:pointer;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;width:100%}
+.screen{display:none;flex:1;flex-direction:column}.screen.active{display:flex}
+.lbl{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;margin-top:4px}
+.fi{width:100%;padding:12px 14px;background:var(--input);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;outline:none;transition:border .2s}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:var(--ph)}
+.fhint{font-size:11px;color:var(--faint);font-style:italic;margin-top:4px;margin-bottom:10px}
+.err-box{background:#2a1010;border:1px solid #a04030;border-radius:8px;padding:11px 14px;margin-bottom:12px;color:#e08070;font-size:13px;display:none;line-height:1.6}
+.err-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:#f08070;margin-bottom:4px}
+.info-box{background:var(--box);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.info-title{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+.step-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.step-num{background:var(--gold);color:#0a1808;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
+.step-txt{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* PROGRESS */
+.progress-box{background:var(--box);border-radius:10px;padding:13px;margin-bottom:12px;border:1px solid var(--border);display:none}
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prog-row:last-child{margin-bottom:0}
+.prog-dot{width:22px;height:22px;min-width:22px;border-radius:50%;border:2px solid #4a5a4a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#6a7a5a;transition:all .3s}
+.prog-dot.done{background:var(--gold);border-color:var(--gold);color:#0a1808;font-size:12px;font-weight:700}
+.prog-dot.fail{background:#5a1010;border-color:#c04030;color:#f08070;font-size:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prog-dot.active{border-color:var(--gold);position:relative;overflow:hidden}
+.prog-dot.active .spin{display:block;width:12px;height:12px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+.prog-lbl{font-size:13px;color:var(--faint);flex:1}
+.prog-lbl.done{color:var(--gold)}.prog-lbl.active{color:var(--text)}.prog-lbl.fail{color:#f08070}
+
+/* PASTE FALLBACK */
+.paste-section{background:var(--box);border:1px solid rgba(201,160,32,0.4);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.paste-section.show{display:block}
+.paste-warning{font-size:13px;color:#f0c060;margin-bottom:10px;line-height:1.5}
+.paste-warning strong{color:var(--gold)}
+
+/* TABS */
+.tabs{display:flex;margin:0 16px 10px;background:var(--box);border-radius:10px;padding:4px;gap:4px}
+.tab-btn{flex:1;padding:9px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;transition:all .18s;background:transparent;color:var(--muted)}
+.tab-btn.on{background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;font-weight:700}
+.tc{display:none;overflow-y:auto;flex:1}.tc.on{display:block}
+
+/* MODE PICKER */
+.mode-picker{display:flex;background:var(--box);border-radius:10px;padding:4px;gap:4px;margin-bottom:12px;border:1px solid var(--border)}
+.mode-btn{flex:1;padding:8px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;background:transparent;color:var(--muted);transition:all .18s}
+.mode-btn.on{background:var(--gold);color:#0a1808;font-weight:700}
+
+/* NOTES */
+.notes-body{padding:0 16px 40px}
+.note-card{margin-bottom:14px;padding:13px;background:var(--card);border-radius:12px;border:1px solid var(--border);animation:fadeUp .3s ease forwards}
+.note-card.ok{border-color:var(--ok)}
+.note-num{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;display:block;margin-bottom:4px}
+.note-txt{font-size:15px;line-height:1.8;color:var(--text);margin-bottom:8px}
+.blank{background:transparent;border:none;border-bottom:2px solid var(--gold);color:var(--text);font-size:15px;text-align:center;outline:none;padding:0 4px;min-width:70px;font-family:'Crimson Text',Georgia,serif}
+.blank.ok{border-bottom-color:#5ab02a;color:#5ab02a}
+.blank.rev{border-bottom-color:#4a9a1a;color:#5ab02a;font-style:italic}
+.note-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.note-hint{font-size:12px;color:#6a8a4a;font-style:italic;flex:1}
+.rev-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--gold);padding:3px 8px;cursor:pointer;font-size:10px;font-family:'Cinzel',serif;letter-spacing:1px;white-space:nowrap}
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.mc-btn{border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;background:transparent;color:var(--muted);font-size:13px;text-align:center;transition:all .15s;font-family:'Crimson Text',Georgia,serif}
+.mc-btn.chosen{border-color:var(--gold);background:var(--box);color:var(--text);font-weight:700}
+.mc-btn.correct{background:#1e4a10;border-color:#4a9a2a;color:#80d050;font-weight:700}
+.mc-btn.wrong{background:#3a1010;border-color:#9a3020;color:#f08070}
+.score-bar{padding:10px 14px;background:var(--box);border-radius:10px;text-align:center;border:1px solid var(--border);font-size:13px;color:var(--gold);margin-bottom:6px;font-weight:700}
+
+/* WORD SEARCH */
+.ws-body{padding:0 14px 40px}
+.ws-top-row{display:flex;gap:8px;margin-bottom:8px}
+.ws-stat{flex:1;background:var(--box);border-radius:10px;padding:9px;text-align:center;border:1px solid var(--border)}
+.ws-stat-val{color:var(--gold);font-family:'Cinzel',serif;font-size:14px;font-weight:700}
+.ws-stat-lbl{color:var(--faint);font-size:10px;letter-spacing:1px;margin-top:1px}
+.ws-stat.win{background:#1e4a10;border-color:#4a9a2a}
+.ws-stat.win .ws-stat-val{color:#80d050}
+.ws-instruct{text-align:center;color:var(--faint);font-size:11px;font-style:italic;margin-bottom:10px}
+.ws-grid-wrap{display:flex;justify-content:center;margin-bottom:12px;touch-action:none;user-select:none;-webkit-user-select:none}
+.ws-grid{display:inline-grid;gap:1px;background:rgba(201,160,32,0.2);border:2px solid rgba(201,160,32,0.35);border-radius:8px;overflow:hidden}
+.wc{display:flex;align-items:center;justify-content:center;background:var(--wscell);font-family:'Cinzel',serif;font-weight:700;color:var(--text);-webkit-tap-highlight-color:transparent;transition:background .08s}
+.wc.sel{background:var(--gold);color:#0a1808}
+.wc.found{background:#1e4a10;color:#80d050}
+.ws-btns{display:flex;gap:7px;margin-bottom:14px}
+.ws-btn{flex:1;padding:9px;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;border:1px solid var(--border);background:transparent;color:var(--gold)}
+.ws-btn.gold{border:none;background:linear-gradient(135deg,#b89010,var(--gold));color:#0a1808;font-weight:700}
+.word-list{display:flex;flex-wrap:wrap;gap:6px}
+.word-item{background:var(--box);border-radius:8px;padding:5px 10px;border:1px solid var(--border);font-family:'Cinzel',serif;font-size:11px;color:var(--muted);letter-spacing:1px;transition:all .2s}
+.word-item.done{background:#1e3a10;border-color:#4a8a2a;color:#70c040;text-decoration:line-through;text-decoration-color:#4a8a2a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}50%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.celebrate{background:#1e4a10;border:1px solid #4a9a2a;border-radius:10px;padding:12px;text-align:center;margin-bottom:10px;color:#80d050;font-weight:700;font-size:14px;display:none;animation:pop .4s ease forwards}
+.celebrate.show{display:block}
+
+/* PASSAGE */
+.passage-hdr{padding:6px 16px 8px;text-align:center}
+.passage-ref{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);font-weight:600}
+.passage-theme{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
+.passage-actions{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.passage-box{margin:0 16px 8px;padding:10px 12px;background:var(--box);border-radius:8px;border:1px solid var(--border);max-height:120px;overflow-y:auto;display:none}
+.passage-box.show{display:block}
+.passage-txt{font-size:13px;color:var(--muted);line-height:1.8;font-style:italic}
+
+/* INPUT / SETUP */
+.inp-body{padding:0 16px 40px;flex:1;overflow-y:auto}
+.cross-hdr{text-align:center;padding:10px 0 14px}
+.cross-hdr .icon{font-size:34px;color:var(--gold)}
+.cross-hdr h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:3px;margin:6px 0 4px}
+.cross-hdr p{color:var(--muted);font-size:13px;font-style:italic;line-height:1.5}
+.diff-row{display:flex;gap:6px;margin-bottom:14px}
+.diff-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
+.diff-pill.on{background:var(--gold);border-color:var(--gold);color:#0a1808;font-weight:700}
+.feat-box{padding:13px;background:var(--box);border-radius:10px;border:1px solid var(--border);margin-top:8px}
+.feat-title{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:10px}
+.feat-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:7px}
+.feat-icon{font-size:15px;min-width:22px}
+.feat-txt{font-size:13px;color:var(--muted);line-height:1.5}
+.hist-body{padding:0 16px 40px;overflow-y:auto;flex:1}
+.hist-card{background:var(--hist);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer;transition:border .2s}
+.hist-card:hover{border-color:var(--gold)}
+.hist-ref{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);font-weight:600;margin-bottom:2px}
+.hist-date{font-size:11px;color:var(--faint);margin-bottom:4px}
+.hist-theme{font-size:13px;color:var(--muted);font-style:italic}
+.hist-empty{text-align:center;color:var(--faint);margin-top:40px;font-size:15px;font-style:italic}
+.sett-body{padding:0 16px 40px;overflow-y:auto;flex:1}
+.sett-section{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;margin-top:20px;margin-bottom:10px}
+.sett-row{display:flex;align-items:center;justify-content:space-between;background:var(--box);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:8px}
+.sett-label{font-size:15px;color:var(--text)}
+.toggle{width:46px;height:26px;background:#3a4a3a;border-radius:13px;position:relative;cursor:pointer;transition:background .2s;border:none;outline:none;flex-shrink:0}
+.toggle.on{background:var(--gold)}
+.toggle::after{content:"";position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
+.toggle.on::after{left:23px}
+.diff-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.diff-card{background:var(--box);border-radius:10px;padding:12px 14px;border:1px solid var(--border);cursor:pointer;transition:all .18s;display:flex;justify-content:space-between;align-items:center}
+.diff-card.on{border-color:var(--gold);background:rgba(201,160,32,0.08)}
+.diff-label{font-family:'Cinzel',serif;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:1px}
+.diff-card.on .diff-label{color:var(--gold)}
+.diff-desc{font-size:12px;color:var(--faint)}
+.diff-check{color:var(--gold);font-size:16px;display:none}.diff-card.on .diff-check{display:block}
+
+.notes-panel{background:var(--box);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:14px}
+.notes-panel .lbl:first-child{margin-top:0}
+.notes-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.notes-actions .outline-btn,.notes-actions .gold-btn{margin-top:0;flex:1 1 160px}
+.reflection-card{background:var(--box);border-radius:12px;padding:14px;border:1px solid var(--border);margin-top:14px}
+.reflection-q{font-size:14px;color:var(--text);margin-bottom:6px}
+.memory-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.memory-controls .outline-btn,.memory-controls .gold-btn{margin-top:0;flex:1 1 120px}
+.memory-sub{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:10px;text-align:center}
+.audience-row{display:flex;gap:6px;margin-bottom:12px}
+.audience-pill{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;transition:all .18s}
+.audience-pill.on{background:var(--gold);border-color:var(--gold);color:#0a1808;font-weight:700}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%,100%{opacity:1}50%{opacity:.45}}.shim{animation:shimmer 1.3s ease-in-out infinite}
 </style>
 </head>
-
 <body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>✦ ESV VERSE STUDY</h1>
+      <p>ENGLISH STANDARD VERSION</p>
+    </div>
+    <div class="hdr-btns">
+      <button class="sm-btn" id="new-btn" style="display:none" onclick="showInput()">← NEW</button>
+      <button class="sm-btn" id="hist-btn" style="display:none" onclick="showHistory()">📚</button>
+      <button class="sm-btn" onclick="showSettings()">⚙</button>
+    </div>
+  </div>
+  <div class="rule"><div></div></div>
 
-<div class="container">
+  <!-- INPUT -->
+  <div class="screen active" id="scr-input">
+    <div class="inp-body">
+      <div class="cross-hdr">
+        <div class="icon">✝</div>
+        <h2>ESV VERSE STUDY</h2>
+        <p>Type any verse reference and tap Fetch — the app will automatically load the ESV text for you</p>
+      </div>
 
-  <h1>ANGUS CHURCH STUDY</h1>
+      <div class="diff-row">
+        <button class="diff-pill" data-diff="easy" onclick="setDiff('easy')">EASY</button>
+        <button class="diff-pill on" data-diff="medium" onclick="setDiff('medium')">MEDIUM</button>
+        <button class="diff-pill" data-diff="hard" onclick="setDiff('hard')">HARD</button>
+      </div>
 
-  <h2 id="sermon-title"></h2>
-  <p id="sermon-speaker"></p>
+      <div class="audience-row">
+        <button class="audience-pill" data-audience="kids" onclick="setAudienceMode('kids')">KIDS</button>
+        <button class="audience-pill" data-audience="youth" onclick="setAudienceMode('youth')">YOUTH</button>
+        <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
+      </div>
 
-  <input id="verse-ref" placeholder="Scripture reference" />
+      <label class="lbl">VERSE REFERENCE</label>
+      <input class="fi" id="verse-ref" type="text" placeholder="e.g. John 3:16  or  Matthew 5:1-12" autocorrect="off" spellcheck="false" style="margin-bottom:4px" onkeydown="if(event.key==='Enter')fetchAndGenerate()"/>
+      <p class="fhint">Single verses, ranges, and chapters all work</p>
 
-  <div id="sermon-points"></div>
+      <!-- Progress -->
+      <div class="progress-box" id="progress-box">
+        <div class="prog-row" id="pr-0">
+          <div class="prog-dot" id="pd-0"><span>1</span></div>
+          <span class="prog-lbl" id="pl-0">Fetching ESV text...</span>
+        </div>
+        <div class="prog-row" id="pr-1">
+          <div class="prog-dot" id="pd-1"><span>2</span></div>
+          <span class="prog-lbl" id="pl-1">Building guided notes...</span>
+        </div>
+        <div class="prog-row" id="pr-2">
+          <div class="prog-dot" id="pd-2"><span>3</span></div>
+          <span class="prog-lbl" id="pl-2">Building word search...</span>
+        </div>
+      </div>
 
-  <div id="reflection"></div>
+      <!-- Error -->
+      <div class="err-box" id="err-box">
+        <div class="err-title" id="err-title">ERROR</div>
+        <div id="err-msg"></div>
+      </div>
 
+      <!-- Paste fallback (shown if auto-fetch fails) -->
+      <div class="paste-section" id="paste-section">
+        <p class="paste-warning">⚠ <strong>Auto-fetch is blocked by this app's network settings.</strong><br/>Paste the ESV text below instead — copy it from your Bible app or BibleGateway.com.</p>
+        <label class="lbl">PASTE ESV TEXT</label>
+        <textarea class="fi" id="verse-text" rows="6" placeholder="Paste the ESV Bible verses here..." style="resize:vertical;line-height:1.6;margin-bottom:4px"></textarea>
+        <p class="fhint">Copy from the ESV app, BibleGateway.com, or any ESV source</p>
+        <button class="gold-btn" id="gen-btn-paste" onclick="generateFromPaste()" style="margin-bottom:0">✦ GENERATE FROM PASTED TEXT</button>
+      </div>
+
+      <button class="gold-btn" id="gen-btn" onclick="fetchAndGenerate()" style="margin-bottom:14px">✦ FETCH ESV &amp; GENERATE</button>
+
+      <div class="feat-box">
+        <p class="feat-title">WHAT YOU GET</p>
+        <div class="feat-row"><span class="feat-icon">📖</span><p class="feat-txt">ESV text auto-fetched from the internet</p></div>
+        <div class="feat-row"><span class="feat-icon">✎</span><p class="feat-txt">Fill-in-blank or multiple choice guided notes</p></div>
+        <div class="feat-row"><span class="feat-icon">⊞</span><p class="feat-txt">Word search — drag your finger to find words</p></div>
+        <div class="feat-row"><span class="feat-icon">📚</span><p class="feat-txt">History, timer, difficulty levels, dark/light mode</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDY -->
+  <div class="screen" id="scr-study">
+    <div class="passage-hdr">
+      <p class="passage-ref" id="p-ref"></p>
+      <p class="passage-theme" id="p-theme"></p>
+      <div class="passage-actions">
+        <button class="sm-btn" onclick="togglePassage()" id="passage-toggle-btn">Show Passage</button>
+        <button class="sm-btn" onclick="shareStudy()">Share 📤</button>
+      </div>
+    </div>
+    <div class="passage-box" id="passage-box"><p class="passage-txt" id="p-esv"></p></div>
+    <div class="tabs">
+      <button class="tab-btn on" data-tab="notes" onclick="switchTab('notes')">✎ GUIDED NOTES</button>
+      <button class="tab-btn" data-tab="wordsearch" onclick="switchTab('wordsearch')">⊞ WORD SEARCH</button>
+      <button class="tab-btn" data-tab="memory" onclick="switchTab('memory')">✦ MEMORY VERSE</button>
+    </div>
+    <div class="tc on" id="tc-notes">
+      <div class="notes-body">
+        <div class="audience-row">
+          <button class="audience-pill" data-audience="kids" onclick="setAudienceMode('kids')">KIDS</button>
+          <button class="audience-pill" data-audience="youth" onclick="setAudienceMode('youth')">YOUTH</button>
+          <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
+        </div>
+        <div class="mode-picker">
+          <button class="mode-btn on" id="mode-fillin" onclick="setNoteMode('fillin')">FILL IN BLANK</button>
+          <button class="mode-btn" id="mode-mc" onclick="setNoteMode('mc')">MULTIPLE CHOICE</button>
+        </div>
+        <div id="notes-list"></div>
+        <div class="score-bar" id="score-bar">✦ 0 / 0 correct</div>
+
+        <div class="reflection-card" id="reflection-card">
+          <p class="feat-title">REFLECTION</p>
+          <div id="reflection-list"></div>
+        </div>
+
+        <div class="notes-panel">
+          <label class="lbl">MY SERMON NOTES</label>
+          <textarea class="fi" id="personal-notes" rows="5" placeholder="Write what stood out to you..."></textarea>
+
+          <label class="lbl">MY PRAYER</label>
+          <textarea class="fi" id="personal-prayer" rows="3" placeholder="Write a prayer from today's message..."></textarea>
+
+          <label class="lbl">MY ACTION STEP</label>
+          <input class="fi" id="action-step" type="text" placeholder="What will you do this week?"/>
+
+          <div class="notes-actions">
+            <button class="outline-btn" onclick="savePersonalNotes()">SAVE MY NOTES</button>
+            <button class="gold-btn" onclick="emailMyNotes()">EMAIL MY NOTES TO ME</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tc" id="tc-wordsearch">
+      <div class="ws-body">
+        <div class="ws-top-row">
+          <div class="ws-stat"><div class="ws-stat-val" id="ws-found-val">0 / 0</div><div class="ws-stat-lbl">FOUND</div></div>
+          <div class="ws-stat" id="ws-timer-box"><div class="ws-stat-val" id="ws-timer-val">00:00</div><div class="ws-stat-lbl">TIME</div></div>
+        </div>
+        <div class="celebrate" id="celebrate-banner">🎉 All words found! Great work! 🎉</div>
+        <p class="ws-instruct">Drag your finger across letters to select a word</p>
+        <div class="ws-grid-wrap"><div class="ws-grid" id="ws-grid"></div></div>
+        <div class="ws-btns">
+          <button class="ws-btn gold" onclick="revealOne()">💡 HINT</button>
+          <button class="ws-btn" onclick="revealAll()">⊙ REVEAL ALL</button>
+          <button class="ws-btn" onclick="resetWS()">↺ RESET</button>
+        </div>
+        <div class="word-list" id="word-list"></div>
+      </div>
+    </div>
+    <div class="tc" id="tc-memory">
+      <div class="notes-body">
+        <div class="score-bar" id="memory-level-label">Level 1</div>
+        <p class="memory-sub">Practice the weekly verse by hiding more words each round.</p>
+        <div class="note-card">
+          <p class="note-txt" id="memory-verse-display"></p>
+        </div>
+        <div class="memory-controls">
+          <button class="outline-btn" onclick="showFullVerse()">SHOW FULL</button>
+          <button class="outline-btn" onclick="hideMoreWords()">HIDE MORE</button>
+          <button class="gold-btn" onclick="resetMemoryMode()">RESET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="screen" id="scr-history">
+    <div class="hist-body" id="hist-body"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="scr-settings">
+    <div class="sett-body">
+      <p class="sett-section">APPEARANCE</p>
+      <div class="sett-row"><span class="sett-label">Dark Mode</span><button class="toggle on" id="dark-toggle" onclick="toggleDark()"></button></div>
+
+      <p class="sett-section">NOTE MODE</p>
+      <div class="mode-picker">
+        <button class="mode-btn on" id="sett-mode-fillin" onclick="settSetMode('fillin')">FILL IN BLANK</button>
+        <button class="mode-btn" id="sett-mode-mc" onclick="settSetMode('mc')">MULTIPLE CHOICE</button>
+      </div>
+
+      <p class="sett-section">AUDIENCE</p>
+      <div class="audience-row">
+        <button class="audience-pill" data-audience="kids" onclick="setAudienceMode('kids')">KIDS</button>
+        <button class="audience-pill" data-audience="youth" onclick="setAudienceMode('youth')">YOUTH</button>
+        <button class="audience-pill on" data-audience="adult" onclick="setAudienceMode('adult')">ADULT</button>
+      </div>
+
+      <p class="sett-section">WORD SEARCH DIFFICULTY</p>
+      <div class="diff-cards">
+        <div class="diff-card on" data-diff="easy" onclick="settSetDiff('easy')"><div><div class="diff-label">EASY</div><div class="diff-desc">Smaller grid, 4 directions</div></div><span class="diff-check">✓</span></div>
+        <div class="diff-card" data-diff="medium" onclick="settSetDiff('medium')"><div><div class="diff-label">MEDIUM</div><div class="diff-desc">Standard grid, 8 directions</div></div><span class="diff-check">✓</span></div>
+        <div class="diff-card" data-diff="hard" onclick="settSetDiff('hard')"><div><div class="diff-label">HARD</div><div class="diff-desc">Large grid, all 8 directions, more words</div></div><span class="diff-check">✓</span></div>
+      </div>
+
+      <p class="sett-section">DATA</p>
+      <button class="danger-btn" onclick="clearHistory()">🗑 CLEAR ALL HISTORY</button>
+    </div>
+  </div>
 </div>
 
 <script>
+// ── State ──────────────────────────────────────────────────────────
+var difficulty = 'medium';
+var noteMode = 'fillin';
+var darkMode = true;
+var studyHistory = [];
+var notesData = null;
+var userAnswers = {};
+var revealedSet = new Set();
+var mcChoices = {};
+var wsPlaced = [];
+var wsGridData = [];
+var wsFound = new Set();
+var wsGridSize = 14;
+var wsTimerVal = 0;
+var wsTimerInterval = null;
+var wsRunning = false;
+var wsFinished = false;
+var isDragging = false;
+var dragStart = null;
+var dragEnd = null;
+var currentRef = '';
+var currentText = '';
+var audienceMode = 'adult';
+var reflectionAnswers = {};
+var memoryLevel = 1;
+var memoryWordsHidden = 3;
+var currentMemoryHiddenIndexes = [];
 
-/* ===============================
-   GLOBALS
-=============================== */
-let weeklySermon = null;
-
-const sermonFeedUrl =
-"https://script.google.com/macros/s/AKfycbxBKe6aH0vIWYk38QSEVXCuqMLchI4JI8oEGoQ_RP_mK8koa0f9_qQKI4KBfuVhZMxD/exec";
-
-/* ===============================
-   LOAD FROM GOOGLE SHEETS
-=============================== */
-async function loadWeeklySermonFromSheet() {
-  try {
-    const res = await fetch(sermonFeedUrl);
-    const data = await res.json();
-
-    console.log("Loaded sermon:", data);
-
-    weeklySermon = data;
-
-    applyWeeklySermonToUI();
-
-  } catch (err) {
-    console.error("Error loading sermon:", err);
-  }
-}
-
-/* ===============================
-   APPLY TO UI
-=============================== */
-function applyWeeklySermonToUI() {
-  if (!weeklySermon) return;
-
-  document.getElementById('sermon-title').textContent =
-    weeklySermon.title || '';
-
-  document.getElementById('sermon-speaker').textContent =
-    weeklySermon.speaker ? "Speaker: " + weeklySermon.speaker : '';
-
-  if (weeklySermon.passage) {
-    document.getElementById('verse-ref').value =
-      weeklySermon.passage;
-  }
-
-  renderSermonPoints();
-  renderReflectionQuestions();
-}
-
-/* ===============================
-   SERMON POINTS
-=============================== */
-function renderSermonPoints() {
-  const box = document.getElementById('sermon-points');
-  box.innerHTML = "<h2>Points of Emphasis</h2>";
-
-  (weeklySermon.pointsOfEmphasis || []).forEach((p, i) => {
-    box.innerHTML += `<div class="card">${i+1}. ${p}</div>`;
-  });
-}
-
-/* ===============================
-   REFLECTION QUESTIONS
-=============================== */
-function renderReflectionQuestions() {
-  const box = document.getElementById('reflection');
-  box.innerHTML = "<h2>Reflection</h2>";
-
-  const questions =
-    weeklySermon.reflectionQuestions?.adult || [];
-
-  questions.forEach((q) => {
-    box.innerHTML += `
-      <div class="card">
-        <p><strong>${q}</strong></p>
-        <textarea placeholder="Your response..."></textarea>
-      </div>
-    `;
-  });
-}
-
-/* ===============================
-   AUTO LOAD ON START (FIXED)
-=============================== */
-window.onload = function () {
-  loadWeeklySermonFromSheet();
+var DIFF_CONFIG = {
+  easy:   { gridSize: 12, dirs: [[0,1],[1,0],[1,1],[1,-1]], maxWords: 10 },
+  medium: { gridSize: 14, dirs: [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]], maxWords: 14 },
+  hard:   { gridSize: 16, dirs: [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]], maxWords: 18 }
 };
 
-</script>
+// ── Load settings ──────────────────────────────────────────────────
+(function init() {
+  try {
+    var s = JSON.parse(localStorage.getItem('esv_settings') || '{}');
+    darkMode = s.darkMode !== false;
+    difficulty = s.difficulty || 'medium';
+    noteMode = s.noteMode || 'fillin';
 
+    var rawHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
+    studyHistory = Array.isArray(rawHistory) ? rawHistory : [];
+  } catch(e) {
+    studyHistory = [];
+  }
+  applyDark();
+  applyDiff(difficulty);
+  applyNoteMode(noteMode);
+  document.getElementById('hist-btn').style.display = 'block';
+})();
+
+function saveSettings() {
+  try { localStorage.setItem('esv_settings', JSON.stringify({ darkMode: darkMode, difficulty: difficulty, noteMode: noteMode, audienceMode: audienceMode })); } catch(e) {}
+}
+
+// ── Theme ──────────────────────────────────────────────────────────
+function applyDark() {
+  document.body.classList.toggle('light', !darkMode);
+  var t = document.getElementById('dark-toggle');
+  if (t) t.classList.toggle('on', darkMode);
+}
+function toggleDark() { darkMode = !darkMode; applyDark(); saveSettings(); }
+
+// ── Difficulty ─────────────────────────────────────────────────────
+function applyDiff(d) {
+  difficulty = d;
+  wsGridSize = DIFF_CONFIG[d].gridSize;
+  document.querySelectorAll('.diff-pill').forEach(function(b) { b.classList.toggle('on', b.dataset.diff === d); });
+  document.querySelectorAll('.diff-card').forEach(function(b) { b.classList.toggle('on', b.dataset.diff === d); });
+}
+function setDiff(d) { applyDiff(d); saveSettings(); }
+function settSetDiff(d) { applyDiff(d); saveSettings(); }
+
+// ── Note mode ──────────────────────────────────────────────────────
+function applyNoteMode(m) {
+  noteMode = m;
+  ['fillin','mc'].forEach(function(x) {
+    var a = document.getElementById('mode-' + x);
+    var b = document.getElementById('sett-mode-' + x);
+    if (a) a.classList.toggle('on', m === x);
+    if (b) b.classList.toggle('on', m === x);
+  });
+  if (notesData) renderNotes();
+}
+function setNoteMode(m) { applyNoteMode(m); saveSettings(); }
+function settSetMode(m) { applyNoteMode(m); saveSettings(); }
+
+// ── Audience mode ──────────────────────────────────────────────────
+function setAudienceMode(mode) {
+  audienceMode = mode;
+  document.querySelectorAll('.audience-pill').forEach(function(btn) {
+    btn.classList.toggle('on', btn.dataset.audience === mode);
+  });
+  saveSettings();
+  if (currentText) {
+    notesData = generateNotes(currentRef, currentText);
+    userAnswers = {};
+    revealedSet = new Set();
+    renderNotes();
+  }
+}
+function getAudienceQuestionCount() {
+  if (audienceMode === 'kids') return 4;
+  if (audienceMode === 'youth') return 6;
+  return 8;
+}
+function getReflectionQuestions() {
+  if (audienceMode === 'kids') {
+    return [
+      'What does this verse teach about God?',
+      'What good choice can you make this week?'
+    ];
+  }
+  if (audienceMode === 'youth') {
+    return [
+      'What stands out most in this passage?',
+      'How does this apply at school, at home, or with friends?'
+    ];
+  }
+  return [
+    'What does this passage reveal about God’s character?',
+    'What truth from this passage should shape your week?',
+    'What response or obedience is God calling you to?'
+  ];
+}
+
+// ── Progress UI ────────────────────────────────────────────────────
+function progShow() { document.getElementById('progress-box').style.display = 'block'; }
+function progHide() { document.getElementById('progress-box').style.display = 'none'; }
+function progSet(step, state, msg) {
+  var dot = document.getElementById('pd-' + step);
+  var lbl = document.getElementById('pl-' + step);
+  dot.className = 'prog-dot ' + state;
+  lbl.className = 'prog-lbl ' + state;
+  if (msg) lbl.textContent = msg;
+  if (state === 'done') dot.innerHTML = '✓';
+  else if (state === 'fail') dot.innerHTML = '✗';
+  else if (state === 'active') dot.innerHTML = '<span class="spin"></span>';
+  else dot.innerHTML = '<span>' + (step + 1) + '</span>';
+}
+function progReset() {
+  for (var i = 0; i < 3; i++) progSet(i, '');
+  document.getElementById('pl-0').textContent = 'Fetching ESV text...';
+  document.getElementById('pl-1').textContent = 'Building guided notes...';
+  document.getElementById('pl-2').textContent = 'Building word search...';
+}
+
+// ── Error UI ───────────────────────────────────────────────────────
+function showErr(title, msg) {
+  document.getElementById('err-title').textContent = title;
+  document.getElementById('err-msg').textContent = msg;
+  document.getElementById('err-box').style.display = 'block';
+}
+function hideErr() { document.getElementById('err-box').style.display = 'none'; }
+
+// ── Fetch ESV ──────────────────────────────────────────────────────
+function fetchESVText(ref) {
+  return new Promise(function(resolve, reject) {
+    var enc = encodeURIComponent(ref);
+    var done = false;
+
+    // Master timeout - give up after 12 seconds total
+    var masterTimeout = setTimeout(function() {
+      if (!done) { done = true; reject(new Error('NETWORK_BLOCKED:All requests timed out after 12 seconds. Static.app may be blocking outbound requests.')); }
+    }, 12000);
+
+    function finish(result) { if (!done) { done = true; clearTimeout(masterTimeout); resolve(result); } }
+    function fail(msg) { if (!done) { done = true; clearTimeout(masterTimeout); reject(new Error('NETWORK_BLOCKED:' + msg)); } }
+
+    function tryURL(url, parse, label, timeoutMs) {
+      return new Promise(function(res, rej) {
+        var xhr = new XMLHttpRequest();
+        var tid = setTimeout(function() { xhr.abort(); rej(new Error(label + ':timeout')); }, timeoutMs);
+        xhr.onload = function() {
+          clearTimeout(tid);
+          if (xhr.status < 200 || xhr.status >= 300) { rej(new Error(label + ':HTTP' + xhr.status)); return; }
+          try {
+            var data = JSON.parse(xhr.responseText);
+            if (parse === 'labs') {
+              if (!Array.isArray(data) || !data.length) { rej(new Error(label + ':empty')); return; }
+              var refStr = data[0].bookname + ' ' + data[0].chapter + ':' + data[0].verse;
+              if (data.length > 1) refStr += '-' + data[data.length-1].verse;
+              var txt = data.map(function(v){ return v.verse + ' ' + v.text.replace(/<[^>]+>/g,''); }).join(' ').trim();
+              res({ reference: refStr, text: txt });
+            } else {
+              if (data.error) { rej(new Error('NOTFOUND')); return; }
+              if (!data.text) { rej(new Error(label + ':notext')); return; }
+              res({ reference: data.reference, text: data.text.trim().substring(0, 3500) });
+            }
+          } catch(e) { rej(new Error(label + ':parse')); }
+        };
+        xhr.onerror = function() { clearTimeout(tid); rej(new Error(label + ':blocked')); };
+        xhr.onabort = function() { clearTimeout(tid); rej(new Error(label + ':aborted')); };
+        xhr.open('GET', url, true);
+        xhr.send();
+      });
+    }
+
+    var bibleApi = 'https://bible-api.com/' + enc + '?translation=esv';
+    var labsApi  = 'https://labs.bible.org/api/?passage=' + enc + '&type=json';
+
+    var attempts = [
+      { url: 'https://corsproxy.io/?url=' + encodeURIComponent(bibleApi), parse: 'json', label: 'A' },
+      { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(bibleApi), parse: 'json', label: 'B' },
+      { url: bibleApi, parse: 'json', label: 'C' },
+      { url: 'https://corsproxy.io/?url=' + encodeURIComponent(labsApi), parse: 'labs', label: 'D' },
+      { url: labsApi, parse: 'labs', label: 'E' },
+    ];
+
+    // Fire all requests simultaneously - use whichever responds first
+    var errors = [];
+    var settled = 0;
+    attempts.forEach(function(a) {
+      tryURL(a.url, a.parse, a.label, 10000).then(function(result) {
+        finish(result);
+      }).catch(function(e) {
+        if (e.message === 'NOTFOUND') {
+          done = true; clearTimeout(masterTimeout);
+          reject(new Error('Verse not found: ' + ref + '. Try e.g. Matthew 15:1-20.'));
+          return;
+        }
+        errors.push(e.message);
+        settled++;
+        if (settled === attempts.length && !done) {
+          fail(errors.join(', '));
+        }
+      });
+    });
+  });
+}
+
+// ── Main fetch + generate ──────────────────────────────────────────
+async function fetchAndGenerate() {
+  var ref = document.getElementById('verse-ref').value.trim();
+  if (!ref) { showErr('MISSING REFERENCE', 'Please enter a verse reference like John 3:16 or Matthew 5:1-12.'); return; }
+  hideErr();
+  document.getElementById('paste-section').classList.remove('show');
+  progReset(); progShow();
+  var btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="shim">Fetching ESV text...</span>';
+  try {
+    progSet(0, 'active');
+    var result = await fetchESVText(ref);
+    progSet(0, 'done', '✓ ' + result.reference);
+    buildStudy(result.reference, result.text);
+  } catch(e) {
+    if (e.message.startsWith('NETWORK_BLOCKED')) {
+      progSet(0, 'fail', 'All fetch methods failed');
+      progHide();
+      // Show paste fallback
+      document.getElementById('paste-section').classList.add('show');
+      showErr('AUTO-FETCH UNAVAILABLE', e.message.replace('NETWORK_BLOCKED:', '') + ' -- Paste the ESV text below instead.');
+    } else {
+      progSet(0, 'fail', '✗ ' + e.message.substring(0, 50));
+      showErr('FETCH FAILED', e.message);
+    }
+    btn.disabled = false;
+    btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+  }
+}
+
+function generateFromPaste() {
+  var ref = document.getElementById('verse-ref').value.trim();
+  var text = document.getElementById('verse-text').value.trim();
+  if (!text || text.length < 30) { showErr('MISSING TEXT', 'Please paste the ESV text in the box above first.'); return; }
+  hideErr();
+  progShow(); progReset();
+  buildStudy(ref || 'Bible Study', text);
+}
+
+function buildStudy(ref, text) {
+  progSet(1, 'active');
+  setTimeout(function() {
+    try {
+      var notes = generateNotes(ref, text);
+      if (notes.sentences.length < 3) throw new Error('Not enough content. Try pasting more verses.');
+      progSet(1, 'done', '✓ Guided notes ready');
+      progSet(2, 'active');
+      setTimeout(function() {
+        try {
+          var wsWords = pickSearchWords(text);
+          if (wsWords.length < 4) throw new Error('Not enough words. Try pasting more verses.');
+          var ws = buildWordSearch(wsWords);
+          progSet(2, 'done', '✓ Word search ready');
+          notesData = notes; userAnswers = {}; revealedSet = new Set();
+          wsPlaced = ws.placed; wsGridData = ws.grid; wsGridSize = ws.size;
+          wsFound = new Set(); wsTimerVal = 0; wsRunning = false; wsFinished = false;
+          clearInterval(wsTimerInterval);
+          currentRef = ref;
+          currentText = text;
+          reflectionAnswers = {};
+          document.getElementById('p-ref').textContent = ref;
+          document.getElementById('p-theme').textContent = notes.theme;
+          document.getElementById('p-esv').textContent = text;
+          renderNotes(); renderWS(); resetMemoryMode();
+          saveToHistory();
+          setTimeout(function() { progHide(); showStudy(); startTimer(); loadPersonalNotes(); }, 400);
+        } catch(e) {
+          progSet(2, 'fail', '✗ ' + e.message);
+          showErr('ERROR', e.message);
+          var btn = document.getElementById('gen-btn');
+          btn.disabled = false; btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+        }
+      }, 100);
+    } catch(e) {
+      progSet(1, 'fail', '✗ ' + e.message);
+      showErr('ERROR', e.message);
+      var btn = document.getElementById('gen-btn');
+      btn.disabled = false; btn.innerHTML = '✦ FETCH ESV &amp; GENERATE';
+    }
+  }, 100);
+}
+
+// ── Stop words & scoring ───────────────────────────────────────────
+var STOP = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','up','about','into','through','during','before','after','above','below','between','out','off','over','under','again','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','can','will','just','as','until','while','is','are','was','were','be','been','being','have','has','had','do','does','did','shall','should','would','could','may','might','must','that','this','these','those','it','its','he','his','him','she','her','they','their','them','we','our','us','you','your','i','my','me','what','who','which','said']);
+var THEOL = new Set(['pharisees','disciples','jerusalem','tradition','commandment','father','heart','mouth','blind','parable','prophet','elders','kingdom','faith','prayer','worship','heaven','grace','truth','spirit','flesh','blood','lord','gospel','salvation','righteousness','holiness','covenant','baptism','repentance','forgiveness','mercy','glory','eternal','resurrection','scripture','temple','sacrifice','blessing','peace','wisdom','power','authority','servant','master','disciple','apostle','pharisee','scribe','synagogue','sabbath','passover','israel','gentile','unclean','defilement','healing','miracle']);
+
+function scoreWord(w) {
+  var lw = w.toLowerCase(), s = 0;
+  if (lw.length >= 5) s += 2;
+  if (lw.length >= 7) s += 2;
+  if (THEOL.has(lw)) s += 6;
+  if (/^[A-Z]/.test(w)) s += 2;
+  if (STOP.has(lw)) s -= 20;
+  return s;
+}
+function cleanWord(w) { return w.replace(/[^a-zA-Z]/g, ''); }
+function splitSentences(text) { return text.split(/(?<=[.?!])\s+/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 15; }); }
+function shuffle(arr) { var a=arr.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+
+// ── Notes generation ───────────────────────────────────────────────
+function generateNotes(ref, text) {
+  var sentences = splitSentences(text);
+  var notes = [];
+  var targetCount = getAudienceQuestionCount();
+  var shuffled = sentences.slice().sort(function() { return Math.random() - 0.5; });
+  for (var si = 0; si < shuffled.length; si++) {
+    if (notes.length >= targetCount) break;
+    var sent = shuffled[si];
+    var rawWords = sent.split(/\s+/);
+    if (rawWords.length < 5) continue;
+    if (audienceMode === 'kids' && rawWords.length > 18) continue;
+    var bestWord = null, bestScore = -99, bestIdx = -1;
+    for (var i = 0; i < rawWords.length; i++) {
+      var cleaned = cleanWord(rawWords[i]);
+      if (cleaned.length < 3) continue;
+      if (audienceMode === 'kids' && (cleaned.length > 7 || cleaned.length < 3)) continue;
+      var sc = scoreWord(cleaned);
+      if (audienceMode === 'kids' && /^[A-Z]/.test(cleaned)) sc += 2;
+      if (audienceMode === 'youth' && cleaned.length >= 5) sc += 1;
+      if (sc > bestScore && !STOP.has(cleaned.toLowerCase())) { bestScore = sc; bestWord = cleaned; bestIdx = i; }
+    }
+    if (!bestWord || bestScore < -2) continue;
+    var blankSent = rawWords.map(function(w, idx) { return idx === bestIdx ? '___' : w; }).join(' ').replace(/^\d+\s+/, '');
+    notes.push({ text: blankSent, answer: bestWord.toUpperCase(), hint: buildHint(bestWord, sent), wrong: buildWrongAnswers(bestWord, text) });
+  }
+  if (notes.length < targetCount) {
+    var allWords = text.split(/\s+/).map(cleanWord).filter(function(w) {
+      return w.length >= (audienceMode === 'kids' ? 3 : 4) &&
+        w.length <= (audienceMode === 'kids' ? 7 : 12) &&
+        !STOP.has(w.toLowerCase());
+    }).sort(function(a, b) { return scoreWord(b) - scoreWord(a); });
+    var used = new Set(notes.map(function(n) { return n.answer.toLowerCase(); }));
+    for (var ai = 0; ai < allWords.length; ai++) {
+      if (notes.length >= targetCount) break;
+      var word = allWords[ai];
+      if (used.has(word.toLowerCase())) continue;
+      used.add(word.toLowerCase());
+      var containing = sentences.find(function(s) { return s.toLowerCase().includes(word.toLowerCase()); });
+      if (!containing) continue;
+      var rw = containing.split(/\s+/);
+      var ridx = rw.findIndex(function(w) { return cleanWord(w).toLowerCase() === word.toLowerCase(); });
+      if (ridx === -1) continue;
+      var bs = rw.map(function(w, i) { return i === ridx ? '___' : w; }).join(' ').replace(/^\d+\s+/, '');
+      notes.push({ text: bs, answer: word.toUpperCase(), hint: buildHint(word, containing), wrong: buildWrongAnswers(word, text) });
+    }
+  }
+  mcChoices = {};
+  notes.forEach(function(n, i) { mcChoices[i] = shuffle([n.answer].concat(n.wrong.slice(0, 3))); });
+  var theme = audienceMode === 'kids'
+    ? 'Simple guided notes for children'
+    : audienceMode === 'youth'
+      ? 'Guided notes for youth with practical application'
+      : 'Deeper guided notes for adult study and reflection';
+  return { title: ref || 'Bible Study', theme: theme, sentences: notes.slice(0, targetCount) };
+}
+
+function buildWrongAnswers(word, text) {
+  var allWords = text.split(/\s+/).map(cleanWord).filter(function(w) { return w.length >= 3 && !STOP.has(w.toLowerCase()) && w.toLowerCase() !== word.toLowerCase() && /^[a-zA-Z]+$/.test(w); });
+  var seen = new Set(); var unique = [];
+  allWords.forEach(function(w) { var k=w.toLowerCase(); if(!seen.has(k)){seen.add(k);unique.push(w);} });
+  unique.sort(function(a,b){return scoreWord(b)-scoreWord(a);});
+  var result = [];
+  for (var i = 0; i < unique.length && result.length < 3; i++) if (unique[i].toUpperCase() !== word.toUpperCase()) result.push(unique[i].toUpperCase());
+  while (result.length < 3) result.push(['FAITH','GRACE','TRUTH','LOVE','PEACE'][result.length]);
+  return result;
+}
+
+function buildHint(word, sentence) {
+  var w = word.toLowerCase();
+  var hints = { pharisees:'Religious leaders who questioned Jesus', disciples:'Those who followed Jesus', tradition:'Customs of the elders', commandment:'A directive from God', prophet:'One who speaks for God', heart:'Source of good and evil thoughts', elders:'Respected community leaders', father:'God; also a human parent', heaven:'Where God dwells', kingdom:'The reign and rule of God', worship:'Honoring God with reverence', faith:'Trust and belief in God', grace:"God's unmerited favor", truth:'What sets people free', blind:'Cannot see; spiritually lost', mouth:'Organ of speech', defiles:'Makes impure or unclean', parable:'A story with a spiritual meaning', lord:'Title for God or Jesus', spirit:'The Holy Spirit' };
+  if (hints[w]) return hints[w];
+  var words = sentence.split(/\s+/);
+  var idx = words.findIndex(function(wr) { return cleanWord(wr).toLowerCase() === w; });
+  if (idx > 0) { var b = cleanWord(words[idx-1]); if (b.length > 3 && !STOP.has(b.toLowerCase())) return 'Follows "' + b + '"'; }
+  if (idx >= 0 && idx < words.length-1) { var a = cleanWord(words[idx+1]); if (a.length > 3 && !STOP.has(a.toLowerCase())) return 'Precedes "' + a + '"'; }
+  return 'Found in this passage (' + word.length + ' letters)';
+}
+
+// ── Word search ────────────────────────────────────────────────────
+function pickSearchWords(text) {
+  var config = DIFF_CONFIG[difficulty];
+  var wordMap = new Map();
+  text.split(/\s+/).forEach(function(w) {
+    var key = cleanWord(w).toLowerCase();
+    if (key.length < 4 || key.length > 11 || STOP.has(key) || /[^a-z]/.test(key)) return;
+    var score = scoreWord(w);
+    if (!wordMap.has(key) || score > wordMap.get(key).score) wordMap.set(key, { word: key.toUpperCase(), score: score });
+  });
+  return Array.from(wordMap.values()).sort(function(a,b){return b.score-a.score;}).slice(0, config.maxWords).map(function(w){return w.word;});
+}
+
+function buildWordSearch(words) {
+  var config = DIFF_CONFIG[difficulty];
+  var GS = config.gridSize;
+  var grid = Array(GS).fill(null).map(function(){return Array(GS).fill('');});
+  var placed = [];
+  var sorted = words.slice().sort(function(a,b){return b.length-a.length;});
+  for (var wi = 0; wi < sorted.length; wi++) {
+    var word = sorted[wi]; var success = false;
+    for (var attempt = 0; attempt < 300 && !success; attempt++) {
+      var d = config.dirs[Math.floor(Math.random()*config.dirs.length)];
+      var dr=d[0]; var dc=d[1];
+      var maxR=dr===0?GS-1:dr>0?GS-word.length:word.length-1;
+      var maxC=dc===0?GS-1:dc>0?GS-word.length:word.length-1;
+      var minR=dr<0?word.length-1:0; var minC=dc<0?word.length-1:0;
+      if (maxR<minR||maxC<minC) continue;
+      var r=minR+Math.floor(Math.random()*(maxR-minR+1));
+      var c=minC+Math.floor(Math.random()*(maxC-minC+1));
+      var fits=true;
+      for (var i=0;i<word.length;i++){var nr=r+dr*i;var nc=c+dc*i;if(nr<0||nr>=GS||nc<0||nc>=GS){fits=false;break;}if(grid[nr][nc]!==''&&grid[nr][nc]!==word[i]){fits=false;break;}}
+      if (!fits) continue;
+      var cells=[];
+      for (var i=0;i<word.length;i++){var nr=r+dr*i;var nc=c+dc*i;grid[nr][nc]=word[i];cells.push([nr,nc]);}
+      placed.push({word:word,cells:cells}); success=true;
+    }
+  }
+  var FILL='AAABBBCDDEEEEEFFGGHHIIJKLLLLMMNNNOOOOPQRRSSSTTTTUVWXYZ';
+  for (var r=0;r<GS;r++) for (var c=0;c<GS;c++) if(!grid[r][c]) grid[r][c]=FILL[Math.floor(Math.random()*FILL.length)];
+  return {grid:grid,placed:placed,size:GS};
+}
+
+// ── Notes render ───────────────────────────────────────────────────
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderNotes() {
+  var list=document.getElementById('notes-list'); list.innerHTML='';
+  notesData.sentences.forEach(function(s,i){
+    var parts=s.text.split('___');
+    var isRev=revealedSet.has(i); var val=userAnswers[i]||'';
+    var isOk=val.trim().toLowerCase()===s.answer.toLowerCase();
+    var w=Math.max(70,s.answer.length*12);
+    var card=document.createElement('div');
+    card.className='note-card'+(isOk&&val?' ok':'');
+    card.id='nc-'+i; card.style.animationDelay=(i*.06)+'s';
+    var inner='<span class="note-num">'+(i+1)+'.</span>';
+    if (noteMode==='fillin') {
+      var blankClass='blank'+(isRev?' rev':isOk&&val?' ok':'');
+      var blankVal=isRev?s.answer:(val||'');
+      inner+='<p class="note-txt">'+esc(parts[0])+'<input class="'+blankClass+'" id="bl-'+i+'" type="text" placeholder="________" style="width:'+w+'px" value="'+esc(blankVal)+'" '+(isRev?'readonly':'')+' autocomplete="off" autocorrect="off" spellcheck="false" oninput="chkAns('+i+')"/>'+esc(parts[1]||'')+'</p>';
+    } else {
+      var displayVal=isRev?s.answer:(val||'___');
+      var displayClass='blank'+(isOk&&val?' ok':'')+(isRev?' rev':'');
+      inner+='<p class="note-txt">'+esc(parts[0])+'<span class="'+displayClass+'">'+esc(displayVal)+'</span>'+esc(parts[1]||'')+'</p>';
+      if (!isRev) {
+        var choices=mcChoices[i]||[];
+        inner+='<div class="mc-grid">';
+        choices.forEach(function(choice){
+          var chosen=val===choice; var correct=choice.toLowerCase()===s.answer.toLowerCase();
+          var cls='mc-btn';
+          if(chosen&&correct)cls+=' correct'; else if(chosen&&!correct)cls+=' wrong'; else if(chosen)cls+=' chosen';
+          inner+='<button class="'+cls+'" onclick="selectMC('+i+',\''+esc(choice)+'\')">'+esc(choice)+'</button>';
+        });
+        inner+='</div>';
+      }
+    }
+    inner+='<div class="note-foot"><p class="note-hint">Hint: '+esc(s.hint)+'</p><button class="rev-btn" id="rb-'+i+'" onclick="togRev('+i+')">'+(isRev?'HIDE':'REVEAL')+'</button></div>';
+    card.innerHTML=inner; list.appendChild(card);
+  });
+  renderReflection();
+  updateScore();
+}
+function chkAns(i){var inp=document.getElementById('bl-'+i);if(!inp)return;var val=inp.value.trim();userAnswers[i]=val;var isOk=val.toLowerCase()===notesData.sentences[i].answer.toLowerCase();inp.className='blank'+(isOk&&val?' ok':'');document.getElementById('nc-'+i).className='note-card'+(isOk&&val?' ok':'');updateScore();}
+function selectMC(i,choice){userAnswers[i]=choice;renderNotes();}
+function togRev(i){if(revealedSet.has(i))revealedSet.delete(i);else revealedSet.add(i);renderNotes();}
+function updateScore(){if(!notesData)return;var t=notesData.sentences.length;var c=Object.entries(userAnswers).filter(function(e){return e[1].trim().toLowerCase()===(notesData.sentences[+e[0]]||{}).answer.toLowerCase();}).length;document.getElementById('score-bar').textContent='✦ '+c+' / '+t+' correct';}
+function renderReflection(){
+  var list=document.getElementById('reflection-list'); if(!list)return;
+  var qs=getReflectionQuestions();
+  list.innerHTML='';
+  qs.forEach(function(q,i){
+    var wrap=document.createElement('div');
+    wrap.style.marginBottom='12px';
+    wrap.innerHTML='<p class="reflection-q">'+esc((i+1)+'. '+q)+'</p><textarea class="fi" rows="3" data-reflection="'+i+'" placeholder="Write your response..."></textarea>';
+    list.appendChild(wrap);
+  });
+  list.querySelectorAll('textarea').forEach(function(el){
+    var idx=el.getAttribute('data-reflection');
+    el.value=reflectionAnswers[idx]||'';
+    el.oninput=function(){reflectionAnswers[idx]=el.value;};
+  });
+}
+
+// ── Personal notes ─────────────────────────────────────────────────
+function getPersonalStorageKey(){return 'esv_personal_notes_' + currentRef + '_' + audienceMode;}
+function savePersonalNotes() {
+  var noteBundle = {
+    ref: currentRef,
+    date: new Date().toLocaleDateString(),
+    audienceMode: audienceMode,
+    answers: userAnswers,
+    reflections: reflectionAnswers,
+    notes: document.getElementById('personal-notes') ? document.getElementById('personal-notes').value : '',
+    prayer: document.getElementById('personal-prayer') ? document.getElementById('personal-prayer').value : '',
+    action: document.getElementById('action-step') ? document.getElementById('action-step').value : ''
+  };
+  try {
+    localStorage.setItem(getPersonalStorageKey(), JSON.stringify(noteBundle));
+    alert('Your notes have been saved.');
+  } catch (e) {
+    alert('Unable to save notes on this device.');
+  }
+}
+function loadPersonalNotes() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(getPersonalStorageKey()) || '{}');
+    if (saved.answers && typeof saved.answers === 'object') userAnswers = saved.answers;
+    reflectionAnswers = (saved.reflections && typeof saved.reflections === 'object') ? saved.reflections : {};
+    if (document.getElementById('personal-notes')) document.getElementById('personal-notes').value = saved.notes || '';
+    if (document.getElementById('personal-prayer')) document.getElementById('personal-prayer').value = saved.prayer || '';
+    if (document.getElementById('action-step')) document.getElementById('action-step').value = saved.action || '';
+    renderNotes();
+  } catch (e) {}
+}
+function emailMyNotes() {
+  var notes = document.getElementById('personal-notes') ? document.getElementById('personal-notes').value : '';
+  var prayer = document.getElementById('personal-prayer') ? document.getElementById('personal-prayer').value : '';
+  var action = document.getElementById('action-step') ? document.getElementById('action-step').value : '';
+  var answerText = '';
+  if (notesData && notesData.sentences) {
+    notesData.sentences.forEach(function(s, i) {
+      answerText += (i + 1) + '. ' + s.text.replace('___', userAnswers[i] || '________') + '\n';
+    });
+  }
+  var reflectionText = '';
+  getReflectionQuestions().forEach(function(q, i) {
+    reflectionText += (i + 1) + '. ' + q + '\n' + (reflectionAnswers[i] || '') + '\n\n';
+  });
+  var subject = encodeURIComponent('My Bible Study Notes - ' + currentRef);
+  var body = encodeURIComponent(
+    'Bible Study: ' + currentRef + '\n' +
+    'Audience: ' + audienceMode.toUpperCase() + '\n\n' +
+    'My Guided Notes:\n' + answerText + '\n' +
+    'Reflection:\n' + reflectionText +
+    'My Sermon Notes:\n' + notes + '\n\n' +
+    'My Prayer:\n' + prayer + '\n\n' +
+    'My Action Step:\n' + action + '\n'
+  );
+  window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+}
+
+// ── Word search render ─────────────────────────────────────────────
+function renderWS(){
+  var grid=document.getElementById('ws-grid');
+  var avail=Math.min(340,window.innerWidth-28);
+  var cs=Math.floor(avail/wsGridSize); var fs=Math.max(7,Math.floor(cs*.48));
+  grid.style.gridTemplateColumns='repeat('+wsGridSize+','+cs+'px)';
+  grid.style.gridTemplateRows='repeat('+wsGridSize+','+cs+'px)';
+  grid.innerHTML='';
+  for(var r=0;r<wsGridSize;r++){for(var c=0;c<wsGridSize;c++){var cell=document.createElement('div');cell.className='wc';cell.id='wc-'+r+'-'+c;cell.style.width=cell.style.height=cs+'px';cell.style.fontSize=fs+'px';cell.textContent=wsGridData[r][c];grid.appendChild(cell);}}
+  setupWSTouch();
+  renderWordList();
+  updateWSStatus();
+}
+function renderWordList(){var list=document.getElementById('word-list');list.innerHTML='';wsPlaced.forEach(function(p){var el=document.createElement('div');el.className='word-item'+(wsFound.has(p.word)?' done':'');el.id='wi-'+p.word;el.textContent=p.word;list.appendChild(el);});}
+function updateWSStatus(){document.getElementById('ws-found-val').textContent=wsFound.size+' / '+wsPlaced.length;}
+
+// ── Word search touch/drag ─────────────────────────────────────────
+function getCellFromPoint(x,y){var grid=document.getElementById('ws-grid');var rect=grid.getBoundingClientRect();var avail=Math.min(340,window.innerWidth-28);var cs=Math.floor(avail/wsGridSize);var col=Math.floor((x-rect.left)/cs);var row=Math.floor((y-rect.top)/cs);if(row>=0&&row<wsGridSize&&col>=0&&col<wsGridSize)return[row,col];return null;}
+function getLineCells(start,end){if(!start||!end)return[];var r1=start[0];var c1=start[1];var r2=end[0];var c2=end[1];var dr=r2-r1;var dc=c2-c1;if(dr===0&&dc===0)return[[r1,c1]];var len=Math.max(Math.abs(dr),Math.abs(dc));var normDr=dr===0?0:dr/Math.abs(dr);var normDc=dc===0?0:dc/Math.abs(dc);var cells=[];for(var i=0;i<=len;i++){var nr=r1+normDr*i;var nc=c1+normDc*i;if(nr>=0&&nr<wsGridSize&&nc>=0&&nc<wsGridSize)cells.push([nr,nc]);}return cells;}
+function highlightSel(cells){document.querySelectorAll('.wc.sel').forEach(function(el){el.classList.remove('sel');});cells.forEach(function(cell){var el=document.getElementById('wc-'+cell[0]+'-'+cell[1]);if(el&&!el.classList.contains('found'))el.classList.add('sel');});}
+function checkSel(start,end){var cells=getLineCells(start,end);var selected=cells.map(function(cell){return(wsGridData[cell[0]]||[])[cell[1]]||'';}).join('');var rev=selected.split('').reverse().join('');document.querySelectorAll('.wc.sel').forEach(function(el){el.classList.remove('sel');});for(var pi=0;pi<wsPlaced.length;pi++){var p=wsPlaced[pi];if(wsFound.has(p.word))continue;if(selected===p.word||rev===p.word){wsFound.add(p.word);p.cells.forEach(function(cell){var el=document.getElementById('wc-'+cell[0]+'-'+cell[1]);if(el){el.classList.remove('sel');el.classList.add('found');}});var wi=document.getElementById('wi-'+p.word);if(wi)wi.className='word-item done';updateWSStatus();if(wsFound.size===wsPlaced.length){clearInterval(wsTimerInterval);wsRunning=false;wsFinished=true;var banner=document.getElementById('celebrate-banner');banner.textContent='🎉 All '+wsPlaced.length+' words found! Time: '+formatTime(wsTimerVal)+' 🎉';banner.classList.add('show');document.getElementById('ws-timer-box').className='ws-stat win';}return;}};}
+function setupWSTouch(){var grid=document.getElementById('ws-grid');if(!grid)return;grid.addEventListener('touchstart',function(e){e.preventDefault();isDragging=true;var t=e.touches[0];dragStart=getCellFromPoint(t.clientX,t.clientY);dragEnd=dragStart;if(dragStart)highlightSel([dragStart]);},{passive:false});grid.addEventListener('touchmove',function(e){e.preventDefault();if(!isDragging||!dragStart)return;var t=e.touches[0];var cell=getCellFromPoint(t.clientX,t.clientY);if(cell){dragEnd=cell;highlightSel(getLineCells(dragStart,dragEnd));}},{passive:false});grid.addEventListener('touchend',function(e){e.preventDefault();if(isDragging&&dragStart&&dragEnd)checkSel(dragStart,dragEnd);isDragging=false;dragStart=null;dragEnd=null;},{passive:false});grid.addEventListener('mousedown',function(e){isDragging=true;dragStart=getCellFromPoint(e.clientX,e.clientY);dragEnd=dragStart;if(dragStart)highlightSel([dragStart]);});grid.addEventListener('mousemove',function(e){if(!isDragging||!dragStart)return;var cell=getCellFromPoint(e.clientX,e.clientY);if(cell){dragEnd=cell;highlightSel(getLineCells(dragStart,dragEnd));}});grid.addEventListener('mouseup',function(e){if(isDragging&&dragStart&&dragEnd)checkSel(dragStart,dragEnd);isDragging=false;dragStart=null;dragEnd=null;});}
+
+// ── Timer ──────────────────────────────────────────────────────────
+function startTimer(){clearInterval(wsTimerInterval);wsTimerVal=0;wsRunning=true;wsFinished=false;document.getElementById('ws-timer-val').textContent='00:00';document.getElementById('ws-timer-box').className='ws-stat';document.getElementById('celebrate-banner').classList.remove('show');wsTimerInterval=setInterval(function(){if(wsRunning){wsTimerVal++;document.getElementById('ws-timer-val').textContent=formatTime(wsTimerVal);}},1000);}
+function formatTime(secs){var m=Math.floor(secs/60);var s=secs%60;return(m<10?'0':'')+m+':'+(s<10?'0':'')+s;}
+
+// ── WS actions ─────────────────────────────────────────────────────
+function revealOne(){var unfound=wsPlaced.filter(function(p){return!wsFound.has(p.word);});if(!unfound.length)return;var p=unfound[Math.floor(Math.random()*unfound.length)];wsFound.add(p.word);p.cells.forEach(function(cell){var el=document.getElementById('wc-'+cell[0]+'-'+cell[1]);if(el)el.classList.add('found');});var wi=document.getElementById('wi-'+p.word);if(wi)wi.className='word-item done';updateWSStatus();if(wsFound.size===wsPlaced.length){clearInterval(wsTimerInterval);wsFinished=true;document.getElementById('celebrate-banner').classList.add('show');}}
+function revealAll(){wsPlaced.forEach(function(p){wsFound.add(p.word);p.cells.forEach(function(cell){var el=document.getElementById('wc-'+cell[0]+'-'+cell[1]);if(el)el.classList.add('found');});var wi=document.getElementById('wi-'+p.word);if(wi)wi.className='word-item done';});clearInterval(wsTimerInterval);wsFinished=true;updateWSStatus();document.getElementById('celebrate-banner').classList.add('show');}
+function resetWS(){wsFound=new Set();document.querySelectorAll('.wc').forEach(function(el){el.classList.remove('found','sel');});document.querySelectorAll('.word-item').forEach(function(el){el.className='word-item';});document.getElementById('celebrate-banner').classList.remove('show');document.getElementById('ws-timer-box').className='ws-stat';wsFinished=false;updateWSStatus();startTimer();}
+
+// ── Memory verse ───────────────────────────────────────────────────
+function getVerseWords(){return (currentText || '').split(/\s+/).filter(function(w){return w.length;});}
+function pickMemoryIndexes(count){
+  var words = getVerseWords();
+  var eligible = [];
+  for (var i = 0; i < words.length; i++) {
+    if (cleanWord(words[i]).length > 3) eligible.push(i);
+  }
+  var shuffled = eligible.slice().sort(function(){return Math.random()-0.5;});
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+function renderMemoryVerse() {
+  var words = getVerseWords();
+  if (!words.length) return;
+  if (!currentMemoryHiddenIndexes.length && memoryWordsHidden > 0) {
+    currentMemoryHiddenIndexes = pickMemoryIndexes(memoryWordsHidden);
+  }
+  var hiddenSet = new Set(currentMemoryHiddenIndexes);
+  var output = words.map(function(word, i) {
+    if (hiddenSet.has(i) && cleanWord(word).length > 0) return '____';
+    return word;
+  }).join(' ');
+  document.getElementById('memory-verse-display').textContent = output;
+  document.getElementById('memory-level-label').textContent = 'Level ' + memoryLevel;
+}
+function showFullVerse() {
+  document.getElementById('memory-verse-display').textContent = currentText;
+}
+function hideMoreWords() {
+  memoryLevel++;
+  memoryWordsHidden += audienceMode === 'kids' ? 2 : 3;
+  currentMemoryHiddenIndexes = pickMemoryIndexes(memoryWordsHidden);
+  renderMemoryVerse();
+}
+function resetMemoryMode() {
+  memoryLevel = 1;
+  memoryWordsHidden = audienceMode === 'kids' ? 2 : 3;
+  currentMemoryHiddenIndexes = pickMemoryIndexes(memoryWordsHidden);
+  renderMemoryVerse();
+}
+
+// ── History ────────────────────────────────────────────────────────
+function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty,audienceMode:audienceMode};if(!Array.isArray(studyHistory))studyHistory=[];studyHistory=[entry].concat(studyHistory.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(studyHistory));}catch(e){}}
+function clearHistory(){if(!confirm('Clear all study history?'))return;studyHistory=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
+function loadFromHistory(id){var entry=studyHistory.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');audienceMode=entry.audienceMode||'adult';document.querySelectorAll('.audience-pill').forEach(function(btn){btn.classList.toggle('on',btn.dataset.audience===audienceMode);});saveSettings();notesData=entry.notes;userAnswers={};revealedSet=new Set();reflectionAnswers={};currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();resetMemoryMode();showStudy();startTimer();loadPersonalNotes();}
+
+// ── Share ──────────────────────────────────────────────────────────
+function shareStudy(){if(!notesData)return;var text=currentRef+' - Bible Study\n\nGUIDED NOTES\n';notesData.sentences.forEach(function(s,i){text+=(i+1)+'. '+s.text+'\n   Answer: '+s.answer+'\n\n';});text+='WORD SEARCH WORDS\n';wsPlaced.forEach(function(p){text+=p.word+'  ';});if(navigator.share){navigator.share({title:currentRef+' Bible Study',text:text}).catch(function(){});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Study copied to clipboard!');}}
+
+// ── Passage toggle ─────────────────────────────────────────────────
+function togglePassage(){var box=document.getElementById('passage-box');var btn=document.getElementById('passage-toggle-btn');box.classList.toggle('show');btn.textContent=box.classList.contains('show')?'Hide Passage':'Show Passage';}
+
+// ── Nav ────────────────────────────────────────────────────────────
+function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function showInput(){setScreen('scr-input');document.getElementById('new-btn').style.display='none';document.getElementById('hist-btn').style.display='block';var b=document.getElementById('gen-btn');b.disabled=false;b.innerHTML='✦ FETCH ESV &amp; GENERATE';progHide();hideErr();document.getElementById('paste-section').classList.remove('show');}
+function showStudy(){setScreen('scr-study');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';switchTab('notes');}
+function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!studyHistory.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}studyHistory.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
+function showSettings(){var prevStudy=document.getElementById('scr-study').classList.contains('active');setScreen('scr-settings');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';document.getElementById('new-btn').onclick=prevStudy?showStudy:showInput;}
+function switchTab(t){document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});document.getElementById('tc-notes').classList.toggle('on',t==='notes');document.getElementById('tc-wordsearch').classList.toggle('on',t==='wordsearch');document.getElementById('tc-memory').classList.toggle('on',t==='memory');if(t==='wordsearch'&&!wsFinished&&!wsRunning)startTimer();if(t==='memory')renderMemoryVerse();}
+</script>
 </body>
 </html>
