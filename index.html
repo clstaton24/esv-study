@@ -328,7 +328,7 @@ input,textarea,button{font-family:'Crimson Text',Georgia,serif}
 var difficulty = 'medium';
 var noteMode = 'fillin';
 var darkMode = true;
-var history = [];
+var studyHistory = [];
 var notesData = null;
 var userAnswers = {};
 var revealedSet = new Set();
@@ -360,8 +360,12 @@ var DIFF_CONFIG = {
     darkMode = s.darkMode !== false;
     difficulty = s.difficulty || 'medium';
     noteMode = s.noteMode || 'fillin';
-    history = JSON.parse(localStorage.getItem('esv_history') || '[]');
-  } catch(e) {}
+
+    var rawHistory = JSON.parse(localStorage.getItem('esv_history') || '[]');
+    studyHistory = Array.isArray(rawHistory) ? rawHistory : [];
+  } catch(e) {
+    studyHistory = [];
+  }
   applyDark();
   applyDiff(difficulty);
   applyNoteMode(noteMode);
@@ -437,107 +441,75 @@ function hideErr() { document.getElementById('err-box').style.display = 'none'; 
 function fetchESVText(ref) {
   return new Promise(function(resolve, reject) {
     var enc = encodeURIComponent(ref);
-    var cbName = 'bibleCallback_' + Date.now();
-    var script = null;
     var done = false;
-    var errors = [];
 
-    function cleanup() {
-      done = true;
-      if (script && script.parentNode) script.parentNode.removeChild(script);
-      try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
-    }
+    // Master timeout - give up after 12 seconds total
+    var masterTimeout = setTimeout(function() {
+      if (!done) { done = true; reject(new Error('NETWORK_BLOCKED:All requests timed out after 12 seconds. Static.app may be blocking outbound requests.')); }
+    }, 12000);
 
-    function tryFetch(url, timeoutMs) {
+    function finish(result) { if (!done) { done = true; clearTimeout(masterTimeout); resolve(result); } }
+    function fail(msg) { if (!done) { done = true; clearTimeout(masterTimeout); reject(new Error('NETWORK_BLOCKED:' + msg)); } }
+
+    function tryURL(url, parse, label, timeoutMs) {
       return new Promise(function(res, rej) {
         var xhr = new XMLHttpRequest();
-        var tid = setTimeout(function() { xhr.abort(); rej(new Error('timeout')); }, timeoutMs);
+        var tid = setTimeout(function() { xhr.abort(); rej(new Error(label + ':timeout')); }, timeoutMs);
         xhr.onload = function() {
           clearTimeout(tid);
-          if (xhr.status >= 200 && xhr.status < 300) res(xhr.responseText);
-          else rej(new Error('HTTP ' + xhr.status));
+          if (xhr.status < 200 || xhr.status >= 300) { rej(new Error(label + ':HTTP' + xhr.status)); return; }
+          try {
+            var data = JSON.parse(xhr.responseText);
+            if (parse === 'labs') {
+              if (!Array.isArray(data) || !data.length) { rej(new Error(label + ':empty')); return; }
+              var refStr = data[0].bookname + ' ' + data[0].chapter + ':' + data[0].verse;
+              if (data.length > 1) refStr += '-' + data[data.length-1].verse;
+              var txt = data.map(function(v){ return v.verse + ' ' + v.text.replace(/<[^>]+>/g,''); }).join(' ').trim();
+              res({ reference: refStr, text: txt });
+            } else {
+              if (data.error) { rej(new Error('NOTFOUND')); return; }
+              if (!data.text) { rej(new Error(label + ':notext')); return; }
+              res({ reference: data.reference, text: data.text.trim().substring(0, 3500) });
+            }
+          } catch(e) { rej(new Error(label + ':parse')); }
         };
-        xhr.onerror = function() { clearTimeout(tid); rej(new Error('network')); };
-        xhr.onabort = function() { clearTimeout(tid); rej(new Error('aborted')); };
-        xhr.open('GET', url);
+        xhr.onerror = function() { clearTimeout(tid); rej(new Error(label + ':blocked')); };
+        xhr.onabort = function() { clearTimeout(tid); rej(new Error(label + ':aborted')); };
+        xhr.open('GET', url, true);
         xhr.send();
       });
     }
 
-    // Try JSONP first — bypasses CORS completely
-    function tryJSONP(url, parseMode) {
-      return new Promise(function(res, rej) {
-        var cbKey = 'esvcb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
-        var s = document.createElement('script');
-        var tid = setTimeout(function() {
-          if (s.parentNode) s.parentNode.removeChild(s);
-          delete window[cbKey];
-          rej(new Error('jsonp-timeout'));
-        }, 6000);
-        window[cbKey] = function(data) {
-          clearTimeout(tid);
-          if (s.parentNode) s.parentNode.removeChild(s);
-          delete window[cbKey];
-          try {
-            if (parseMode === 'json') {
-              if (data.error) { rej(new Error('notfound')); return; }
-              if (!data.text) { rej(new Error('notext')); return; }
-              res({ reference: data.reference, text: data.text.trim().substring(0, 3500) });
-            }
-          } catch(e) { rej(e); }
-        };
-        s.onerror = function() { clearTimeout(tid); delete window[cbKey]; rej(new Error('script-err')); };
-        s.src = url.replace('CALLBACK', cbKey);
-        document.head.appendChild(s);
-      });
-    }
+    var bibleApi = 'https://bible-api.com/' + enc + '?translation=esv';
+    var labsApi  = 'https://labs.bible.org/api/?passage=' + enc + '&type=json';
 
-    async function run() {
-      var enc2 = encodeURIComponent(ref);
-      var bibleApi = 'https://bible-api.com/' + enc2 + '?translation=esv';
-      var bibleApiJSONP = 'https://bible-api.com/' + enc2 + '?translation=esv&callback=CALLBACK';
-      var labsApi = 'https://labs.bible.org/api/?passage=' + enc2 + '&type=json';
+    var attempts = [
+      { url: 'https://corsproxy.io/?url=' + encodeURIComponent(bibleApi), parse: 'json', label: 'A' },
+      { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(bibleApi), parse: 'json', label: 'B' },
+      { url: bibleApi, parse: 'json', label: 'C' },
+      { url: 'https://corsproxy.io/?url=' + encodeURIComponent(labsApi), parse: 'labs', label: 'D' },
+      { url: labsApi, parse: 'labs', label: 'E' },
+    ];
 
-      // 1. JSONP (no CORS restriction)
-      try {
-        var r = await tryJSONP(bibleApiJSONP, 'json');
-        resolve(r); return;
-      } catch(e) { errors.push('jsonp:' + e.message); }
-
-      // 2. XHR attempts (may work if CORS headers present)
-      var xhrUrls = [
-        { url: 'https://corsproxy.io/?url=' + encodeURIComponent(bibleApi), parse: 'json' },
-        { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(bibleApi), parse: 'json' },
-        { url: bibleApi, parse: 'json' },
-        { url: 'https://corsproxy.io/?url=' + encodeURIComponent(labsApi), parse: 'labs' },
-        { url: labsApi, parse: 'labs' },
-      ];
-
-      for (var i = 0; i < xhrUrls.length; i++) {
-        var a = xhrUrls[i];
-        try {
-          var raw = await tryFetch(a.url, 5000);
-          var data = JSON.parse(raw);
-          if (a.parse === 'labs') {
-            if (!Array.isArray(data) || !data.length) { errors.push('labs:nodata'); continue; }
-            var refStr = data[0].bookname + ' ' + data[0].chapter + ':' + data[0].verse;
-            if (data.length > 1) refStr += '-' + data[data.length-1].verse;
-            var txt = data.map(function(v){ return v.verse + ' ' + v.text.replace(/<[^>]+>/g,''); }).join(' ').trim();
-            resolve({ reference: refStr, text: txt }); return;
-          } else {
-            if (data.error) throw new Error('notfound');
-            if (!data.text) { errors.push('json:notext'); continue; }
-            resolve({ reference: data.reference, text: data.text.trim().substring(0,3500) }); return;
-          }
-        } catch(e) {
-          if (e.message === 'notfound') { reject(new Error('Verse not found: ' + ref + '. Try e.g. Matthew 15:1-20.')); return; }
-          errors.push((i+2) + ':' + e.message.substring(0,20));
+    // Fire all requests simultaneously - use whichever responds first
+    var errors = [];
+    var settled = 0;
+    attempts.forEach(function(a) {
+      tryURL(a.url, a.parse, a.label, 10000).then(function(result) {
+        finish(result);
+      }).catch(function(e) {
+        if (e.message === 'NOTFOUND') {
+          done = true; clearTimeout(masterTimeout);
+          reject(new Error('Verse not found: ' + ref + '. Try e.g. Matthew 15:1-20.'));
+          return;
         }
-      }
-      reject(new Error('NETWORK_BLOCKED:' + errors.join(' | ')));
-    }
-
-    run();
+        errors.push(e.message);
+        settled++;
+        if (settled === attempts.length && !done) {
+          fail(errors.join(', '));
+        }
+      });
+    });
   });
 }
 
@@ -558,7 +530,7 @@ async function fetchAndGenerate() {
     buildStudy(result.reference, result.text);
   } catch(e) {
     if (e.message.startsWith('NETWORK_BLOCKED')) {
-      progSet(0, 'fail', '2717 All ' + attempts.length + ' fetch methods failed');
+      progSet(0, 'fail', 'All fetch methods failed');
       progHide();
       // Show paste fallback
       document.getElementById('paste-section').classList.add('show');
@@ -824,9 +796,9 @@ function revealAll(){wsPlaced.forEach(function(p){wsFound.add(p.word);p.cells.fo
 function resetWS(){wsFound=new Set();document.querySelectorAll('.wc').forEach(function(el){el.classList.remove('found','sel');});document.querySelectorAll('.word-item').forEach(function(el){el.className='word-item';});document.getElementById('celebrate-banner').classList.remove('show');document.getElementById('ws-timer-box').className='ws-stat';wsFinished=false;updateWSStatus();startTimer();}
 
 // ── History ────────────────────────────────────────────────────────
-function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};history=[entry].concat(history.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(history));}catch(e){}}
-function clearHistory(){if(!confirm('Clear all study history?'))return;history=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
-function loadFromHistory(id){var entry=history.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');notesData=entry.notes;userAnswers={};revealedSet=new Set();currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();showStudy();startTimer();}
+function saveToHistory(){var entry={id:Date.now(),ref:currentRef,text:currentText,date:new Date().toLocaleDateString(),notes:notesData,words:wsPlaced.map(function(p){return p.word;}),difficulty:difficulty};if(!Array.isArray(studyHistory))studyHistory=[];studyHistory=[entry].concat(studyHistory.slice(0,19));try{localStorage.setItem('esv_history',JSON.stringify(studyHistory));}catch(e){}}
+function clearHistory(){if(!confirm('Clear all study history?'))return;studyHistory=[];try{localStorage.removeItem('esv_history');}catch(e){}showHistory();}
+function loadFromHistory(id){var entry=studyHistory.find(function(h){return h.id===id;});if(!entry)return;applyDiff(entry.difficulty||'medium');notesData=entry.notes;userAnswers={};revealedSet=new Set();currentRef=entry.ref;currentText=entry.text;var ws=buildWordSearch(entry.words);wsPlaced=ws.placed;wsGridData=ws.grid;wsGridSize=ws.size;wsFound=new Set();document.getElementById('p-ref').textContent=entry.ref;document.getElementById('p-theme').textContent=(entry.notes&&entry.notes.theme)||'';document.getElementById('p-esv').textContent=entry.text;renderNotes();renderWS();showStudy();startTimer();}
 
 // ── Share ──────────────────────────────────────────────────────────
 function shareStudy(){if(!notesData)return;var text=currentRef+' - Bible Study\n\nGUIDED NOTES\n';notesData.sentences.forEach(function(s,i){text+=(i+1)+'. '+s.text+'\n   Answer: '+s.answer+'\n\n';});text+='WORD SEARCH WORDS\n';wsPlaced.forEach(function(p){text+=p.word+'  ';});if(navigator.share){navigator.share({title:currentRef+' Bible Study',text:text}).catch(function(){});}else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Study copied to clipboard!');}}
@@ -838,7 +810,7 @@ function togglePassage(){var box=document.getElementById('passage-box');var btn=
 function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
 function showInput(){setScreen('scr-input');document.getElementById('new-btn').style.display='none';document.getElementById('hist-btn').style.display='block';var b=document.getElementById('gen-btn');b.disabled=false;b.innerHTML='✦ FETCH ESV &amp; GENERATE';progHide();hideErr();document.getElementById('paste-section').classList.remove('show');}
 function showStudy(){setScreen('scr-study');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';switchTab('notes');}
-function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!history.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}history.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
+function showHistory(){setScreen('scr-history');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='none';var body=document.getElementById('hist-body');body.innerHTML='<p class="sett-section" style="margin-top:12px">STUDY HISTORY</p>';if(!studyHistory.length){body.innerHTML+='<p class="hist-empty">No studies yet. Generate your first one!</p>';return;}studyHistory.forEach(function(entry){var card=document.createElement('div');card.className='hist-card';card.innerHTML='<div class="hist-ref">'+esc(entry.ref)+'</div><div class="hist-date">'+esc(entry.date)+' · '+(entry.difficulty||'medium').toUpperCase()+'</div><div class="hist-theme">'+esc((entry.notes&&entry.notes.theme)||'')+'</div>';card.onclick=function(){loadFromHistory(entry.id);};body.appendChild(card);});}
 function showSettings(){var prevStudy=document.getElementById('scr-study').classList.contains('active');setScreen('scr-settings');document.getElementById('new-btn').style.display='block';document.getElementById('hist-btn').style.display='block';document.getElementById('new-btn').onclick=prevStudy?showStudy:showInput;}
 function switchTab(t){document.querySelectorAll('.tab-btn').forEach(function(b,i){b.classList.toggle('on',(i===0)===(t==='notes'));});document.getElementById('tc-notes').classList.toggle('on',t==='notes');document.getElementById('tc-wordsearch').classList.toggle('on',t==='wordsearch');if(t==='wordsearch'&&!wsFinished&&!wsRunning)startTimer();}
 </script>
